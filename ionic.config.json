@@ -1,0 +1,7 @@
+{
+  "name": "gora_picker",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
