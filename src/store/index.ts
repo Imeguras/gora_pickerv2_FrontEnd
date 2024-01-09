@@ -1,6 +1,7 @@
 import { InjectionKey } from 'vue';
-import { createStore, useStore as baseUseStore, Store } from 'vuex';
-import gora_config from '../store/gora_config';
+import { createStore, useStore as baseUseStore, Store, MutationTree, ActionTree} from 'vuex';
+
+import axios from 'axios';
 
 export interface AccountRequest {
 	email: string;
@@ -9,7 +10,7 @@ export interface AccountRequest {
 // interfaces for our State and todos
 export interface BasicSemiCComp {
   id: number;
-  title: string;
+  code: string;
   manufacturer: string;
   quantity: number;
 }
@@ -46,15 +47,19 @@ const mutations: MutationTree<State> = {
 	
 };
 
-
+const getters: any = {
+	getInventory: (state: State) => state.inventory,
+};
 const actions: ActionTree<State, any> = {
-	[ACTIONS_AUTH.login]({ commit }, payload: AccountRequest) {
-		(gora_config.apiURL + '/User/Login', {
-		}).then((response) => {
-			return console.log(response.json());
+	async [ACTIONS_AUTH.login]({ commit }, payload: AccountRequest, ) {
+		axios.post('/User/Login', payload)
+		.then((response) => {
+			console.log(payload);
+			console.log(response.data);
 		}).catch((error) => {
-			console.log(error);
-		})
+			console.log(error)
+			throw error;
+		});
 	}
 
 };
@@ -63,10 +68,13 @@ const actions: ActionTree<State, any> = {
 export const key: InjectionKey<Store<State>> = Symbol();
 const state: State = {
   inventory: [
+	{id: 0, code:'ra6m3', manufacturer:'Renesas', quantity:1},
+	{id: 1, code:'PIC32 MK', manufacturer:'MicroChip', quantity:30},
+
   ],
 };
 
-export const store = createStore<State>({ state });
+export default createStore<State>({ getters, state, mutations, actions });
 
 // our own `useStore` composition function for types
 export function useStore() {
