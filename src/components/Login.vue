@@ -26,7 +26,7 @@
 <script lang="ts">
 
 import { IonCard, IonCardTitle, IonCardContent, IonItem, IonLabel, IonInput, IonButton } from '@ionic/vue';
-import {} from 'vue';
+import axios from 'axios';
 import store from '@/store/index';
 import {AccountRequest, ACTIONS_AUTH} from '@/store/index';
 
@@ -50,10 +50,20 @@ export default {
       auth
     }
   },
+  mounted() {
+    if(localStorage.getItem('token')){
+      axios.defaults.headers.common['Authorization'] = localStorage.getItem('token');
+
+      this.$router.push('/inventory');
+    }
+    //check if localStorage has a token
+    
+  },
   methods: {
     login() {
       store.dispatch(ACTIONS_AUTH.login, this.auth).then(() => {
         this.$router.push('/inventory');
+        
       }).catch((error) => {
         console.log(error);
       });

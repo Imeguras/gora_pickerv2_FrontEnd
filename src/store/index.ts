@@ -52,13 +52,15 @@ const getters: any = {
 };
 const actions: ActionTree<State, any> = {
 	async [ACTIONS_AUTH.login]({ commit }, payload: AccountRequest, ) {
-		axios.post('/User/Login', payload)
+		await axios.post('/User/Login', payload)
 		.then((response) => {
-			console.log(payload);
-			console.log(response.data);
+			const data = response.data.access_token;
+			
+			axios.defaults.headers.common['Authorization'] = 'Bearer ' + data;
+			localStorage.setItem('token', axios.defaults.headers.common['Authorization']);
 		}).catch((error) => {
-			console.log(error)
-			throw error;
+
+			return Promise.reject(error);
 		});
 	}
 

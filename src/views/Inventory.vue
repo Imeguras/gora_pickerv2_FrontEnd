@@ -1,11 +1,14 @@
 <template>
   <ion-page>
+    
     <ion-header>
       <ion-toolbar id="toolbar_inventory">
         <ion-menu-button slot="start"></ion-menu-button>
         <ion-title id="title_inventory">GoraPicker/Inventory</ion-title>
       </ion-toolbar>
     </ion-header>
+    <ion-router-outlet></ion-router-outlet>
+    
     <ion-menu content-id="main-content">
       <ion-content :fullscreen="true">
           <ion-toolbar>
@@ -36,6 +39,12 @@
           <ion-label>{{item.quantity}}</ion-label>
         </ion-item>
       </ion-list>
+      <!-- button to scan-->
+      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button @click="scan">
+          <ion-icon name="scan-outline"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
     </ion-content>
   </ion-page>
 </template>
@@ -49,7 +58,8 @@ import { IonPage,
     IonContent,
     IonButtons,
     IonMenu,
-    IonMenuButton} from '@ionic/vue';
+    IonMenuButton,
+    IonRouterOutlet} from '@ionic/vue';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -79,6 +89,7 @@ export default {
     }
   }, 
   created(){
+    
     this.fetchInventory();
   },
   watch: {
@@ -92,8 +103,11 @@ export default {
     fetchInventory(){
       this.inventory = this.getInventory;
 
+    },
+    scan(){
+      console.log("done");
+      this.$router.push('/inventory/scan');
     }
-    
   }
 }
 
