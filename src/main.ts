@@ -30,11 +30,13 @@ const app = createApp(App)
   .use(store);
 
 axios.defaults.baseURL = config.apiURL
+
 //axios.defaults.headers.common['Content-Type'] = 'application/json'
 //axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*'
 //axios.defaults.headers.common['Access-Control-Allow-Headers'] = '*'
 //axios.defaults.headers.common['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
 //axios.defaults.headers.common['Access-Control-Allow-Credentials'] = 'true'
+
 //axios.defaults.withCredentials = false
 
 //axios proxy to false

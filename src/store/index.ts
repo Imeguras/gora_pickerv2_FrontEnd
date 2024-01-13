@@ -16,6 +16,11 @@ export interface BasicSemiCComp {
 }
 export interface State {
   inventory: BasicSemiCComp[];
+  gchip_details: GeneralChipDetails[]; 
+}
+export interface GeneralChipDetails {
+	display_name: string;
+	children: number[]; 
 }
 
 //mutations enumeration
@@ -24,6 +29,12 @@ export const enum MUTATIONS_INVENTORY {
 	del =  'DEL_INVENTORY',
 
 }
+export const enum MUTATIONS_GENERALCHIPDETAILS {
+	add = 'ADD_GENERALCHIPDETAILS',
+	addrange = 'ADDRANGE_GENERALCHIPDETAILS',
+	update = 'UPDATE_GENERALCHIPDETAILS'
+}
+
 export const enum ACTIONS_INVENTORY {
 	add =  'ADD_INVENTORY',
 	fetch =  'FETCH_INVENTORY',
@@ -35,13 +46,28 @@ export const enum  ACTIONS_AUTH {
 	del =  'LOGOUT_AUTH',
 
 }
-
+export const enum  ACTIONS_GENERALCHIPDETAILS {
+	fetch =  'FETCH_GENERALCHIPDETAILS'
+}
 const mutations: MutationTree<State> = {
 	[MUTATIONS_INVENTORY.add](state, payload: BasicSemiCComp) {
 		state.inventory.push(payload);
 	},
+
 	[MUTATIONS_INVENTORY.del](state, payload: number) {
 		state.inventory.splice(payload, 1);
+	},
+	[MUTATIONS_GENERALCHIPDETAILS.add](state, payload: GeneralChipDetails) {
+		state.gchip_details.push(payload);
+	},
+	[MUTATIONS_GENERALCHIPDETAILS.addrange](state, payload: GeneralChipDetails[]) {
+		state.gchip_details.push(...payload);
+	},
+	[MUTATIONS_GENERALCHIPDETAILS.update](state, payload: GeneralChipDetails) {
+		//find the index of the detail and then replace it with the new one
+		const index = state.gchip_details.findIndex((element) => element.display_name === payload.display_name);
+		state.gchip_details[index] = payload;
+
 	}
 
 	
@@ -49,6 +75,7 @@ const mutations: MutationTree<State> = {
 
 const getters: any = {
 	getInventory: (state: State) => state.inventory,
+	getGeneralChipDetails: (state: State) => state.gchip_details,
 };
 const actions: ActionTree<State, any> = {
 	async [ACTIONS_AUTH.login]({ commit }, payload: AccountRequest, ) {
@@ -60,6 +87,19 @@ const actions: ActionTree<State, any> = {
 			localStorage.setItem('token', axios.defaults.headers.common['Authorization']);
 		}).catch((error) => {
 
+			return Promise.reject(error);
+		});
+	},
+	async [ACTIONS_GENERALCHIPDETAILS.fetch]({ commit }) {
+		await axios.get('/Coverage/generalchip_details')
+		.then((response) => {
+			const data = response.data;
+			
+			
+			
+			commit(MUTATIONS_GENERALCHIPDETAILS.add, ...data);
+
+		}).catch((error) => {
 			return Promise.reject(error);
 		});
 	}
@@ -74,6 +114,8 @@ const state: State = {
 	{id: 1, code:'PIC32 MK', manufacturer:'MicroChip', quantity:30},
 
   ],
+  gchip_details: [
+  ]
 };
 
 export default createStore<State>({ getters, state, mutations, actions });

@@ -17,7 +17,8 @@
         <ion-input type="password" v-model="auth.password"/>
       </ion-item>
       <ion-button expand="block" @click="login">Login</ion-button>
-      <ion-button expand="block" fill="clear" @click="register">Register</ion-button>
+      <ion-button expand="block" fill="clear" id="register">Register</ion-button>
+       <ion-toast trigger="register" message="As of right now, its impossible to create new accounts, talk to the admin" :duration="5000"></ion-toast>
     </ion-card-content>
   </ion-card>
 </div>
@@ -25,21 +26,36 @@
 
 <script lang="ts">
 
-import { IonCard, IonCardTitle, IonCardContent, IonItem, IonLabel, IonInput, IonButton } from '@ionic/vue';
-import axios from 'axios';
-import store from '@/store/index';
-import {AccountRequest, ACTIONS_AUTH} from '@/store/index';
-
-export default {
-  name: 'Login',
-  components: {
+import { IonToolbar,
     IonCard,
     IonCardTitle,
     IonCardContent,
+    IonTitle,
     IonItem,
     IonLabel,
     IonInput,
     IonButton,
+    IonHeader,
+    IonToast } from '@ionic/vue';
+import axios from 'axios';
+import store from '@/store/index';
+import {AccountRequest, ACTIONS_AUTH} from '@/store/index';
+import { jwtDecode } from "jwt-decode";
+
+export default {
+  name: 'Login',
+  components: {
+    IonHeader,
+    IonToolbar,
+    IonCard,
+    IonCardTitle,
+    IonCardContent,
+    IonTitle,
+    IonItem,
+    IonLabel,
+    IonInput,
+    IonButton,
+    IonToast
   }, 
   data() {
     const auth: AccountRequest={
@@ -51,10 +67,31 @@ export default {
     }
   },
   mounted() {
-    if(localStorage.getItem('token')){
+    const token= localStorage.getItem('token');
+    if(token){
+      
+      
+      const decodedHeader = jwtDecode(token);
+      //check http://schemas.microsoft.com/ws/2008/06/identity/claims/expiration for expiration
+    
+      let expiration = decodedHeader["http://schemas.microsoft.com/ws/2008/06/identity/claims/expiration"];
+      
+      if(expiration){
+        //expiration is string
+        const expirationDate = new Date(expiration);
+        const currentDate = new Date();
+        
+        if(expirationDate < currentDate){
+          //token is expired
+          
+         localStorage.removeItem('token');
+          this.$router.push('/login');
+        }
+      }
       axios.defaults.headers.common['Authorization'] = localStorage.getItem('token');
 
       this.$router.push('/inventory');
+     console.log(decodedHeader)
     }
     //check if localStorage has a token
     
@@ -67,7 +104,7 @@ export default {
       }).catch((error) => {
         console.log(error);
       });
-    },
+    }
    
   }
 };
