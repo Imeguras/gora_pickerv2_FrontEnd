@@ -32,6 +32,7 @@ export const enum MUTATIONS_INVENTORY {
 export const enum MUTATIONS_GENERALCHIPDETAILS {
 	add = 'ADD_GENERALCHIPDETAILS',
 	addrange = 'ADDRANGE_GENERALCHIPDETAILS',
+	set = 'SET_GENERALCHIPDETAILS',
 	update = 'UPDATE_GENERALCHIPDETAILS'
 }
 
@@ -63,7 +64,12 @@ const mutations: MutationTree<State> = {
 	[MUTATIONS_GENERALCHIPDETAILS.addrange](state, payload: GeneralChipDetails[]) {
 		state.gchip_details.push(...payload);
 	},
+	[MUTATIONS_GENERALCHIPDETAILS.set](state, payload: GeneralChipDetails[]) {
+		
+		state.gchip_details = payload;
+	},
 	[MUTATIONS_GENERALCHIPDETAILS.update](state, payload: GeneralChipDetails) {
+
 		//find the index of the detail and then replace it with the new one
 		const index = state.gchip_details.findIndex((element) => element.display_name === payload.display_name);
 		state.gchip_details[index] = payload;
@@ -95,9 +101,9 @@ const actions: ActionTree<State, any> = {
 		.then((response) => {
 			const data = response.data;
 			
+			console.log(data);
 			
-			
-			commit(MUTATIONS_GENERALCHIPDETAILS.add, ...data);
+			commit(MUTATIONS_GENERALCHIPDETAILS.set, data);
 
 		}).catch((error) => {
 			return Promise.reject(error);

@@ -82,15 +82,14 @@ export default {
         const currentDate = new Date();
         
         if(expirationDate < currentDate){
-          //token is expired
-          
-         localStorage.removeItem('token');
-          this.$router.push('/login');
+          //TODO 
+          //localStorage.removeItem('token');
+          //this.$router.replace('/login');
         }
       }
       axios.defaults.headers.common['Authorization'] = localStorage.getItem('token');
 
-      this.$router.push('/inventory');
+      this.$router.replace('/inventory');
      console.log(decodedHeader)
     }
     //check if localStorage has a token
@@ -99,7 +98,7 @@ export default {
   methods: {
     login() {
       store.dispatch(ACTIONS_AUTH.login, this.auth).then(() => {
-        this.$router.push('/inventory');
+        this.$router.replace('/inventory');
         
       }).catch((error) => {
         console.log(error);

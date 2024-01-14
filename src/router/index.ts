@@ -3,6 +3,9 @@ import { RouteRecordRaw } from 'vue-router';
 
 import AuthPage from '../views/AuthPage.vue'
 import Inventory from '../views/Inventory.vue'
+
+import Scan from '../components/Scan.vue'
+import InventoryList from '../components/InventoryList.vue'
 import axios from 'axios';
 const routes: Array<RouteRecordRaw> = [
   {
@@ -28,8 +31,16 @@ const routes: Array<RouteRecordRaw> = [
 	component: Inventory,
 	children: [
 		{
+			path: '',
+			redirect: '/inventory/list'
+		},
+		{
+			path: 'list',
+			component: InventoryList
+		},
+		{
 			path: 'scan',
-			component: () => import('@/components/Scan.vue')
+			component: Scan
 		}
 	]
   }
