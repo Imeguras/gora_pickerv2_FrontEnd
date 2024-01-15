@@ -1,7 +1,5 @@
 <template lang="pug">
 ion-page
-  .ion-padding
-  ion-content
     
 
 
@@ -47,7 +45,8 @@ export default {
 }
 
 </script>
-<style>
+<style scoped>
+
 .ion-padding {
   margin-top:2em;
 }

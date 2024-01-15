@@ -1,6 +1,6 @@
 <template lang="pug">
 ion-page
-  ion-header
+  ion-header(:translucent="true")
     ion-toolbar#toolbar_inventory
       ion-menu-button(slot="start")
       ion-title#title_inventory GoraPicker{{capitalizeFirstLetter(componentInRouter)}}
