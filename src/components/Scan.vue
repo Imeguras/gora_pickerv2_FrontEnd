@@ -47,23 +47,8 @@ export default {
 }
 
 </script>
-<style scoped>
+<style>
 .ion-padding {
   margin-top:2em;
-}
-body.barcode-scanner-active {
-  visibility: hidden;
-  --background: transparent;
-  --ion-background-color: transparent;
-}
-.barcode-scanner-modal {
-  visibility: visible;
-}
-
-@media (prefers-color-scheme: dark) {
-  .barcode-scanner-modal {
-    --background: transparent;
-    --ion-background-color: transparent;
-  }
 }
 </style>

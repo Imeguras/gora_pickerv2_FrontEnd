@@ -6,11 +6,17 @@ import Inventory from '../views/Inventory.vue'
 
 import Scan from '../components/Scan.vue'
 import InventoryList from '../components/InventoryList.vue'
+import ScanPage from '../views/ScanPage.vue'
+
 import axios from 'axios';
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/auth/login'
+    redirect: '/test'
+  },
+  {
+	path: '/test',
+	component: ScanPage
   },
   {
 	path: '/auth/',
@@ -53,12 +59,12 @@ const router = createRouter({
 //before each route check if user is logged in
 router.beforeEach((to, from, next) => {
 	//console.log("done!!!"+axios.defaults.headers.common['Authorization']); 
-  if (to.path !== '/auth/login' && !axios.defaults.headers.common['Authorization']) {
+  /*if (to.path !== '/auth/login' && !axios.defaults.headers.common['Authorization']) {
 	next('/auth/login');
 
-  } else {
+  } else {*/
 	next();
-  }
+  //}
 });
 
 export default router
