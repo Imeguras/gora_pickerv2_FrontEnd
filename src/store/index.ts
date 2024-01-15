@@ -17,6 +17,7 @@ export interface BasicSemiCComp {
 export interface State {
   inventory: BasicSemiCComp[];
   gchip_details: GeneralChipDetails[]; 
+  
 }
 export interface GeneralChipDetails {
 	display_name: string;
@@ -51,6 +52,7 @@ export const enum  ACTIONS_GENERALCHIPDETAILS {
 	fetch =  'FETCH_GENERALCHIPDETAILS'
 }
 const mutations: MutationTree<State> = {
+	
 	[MUTATIONS_INVENTORY.add](state, payload: BasicSemiCComp) {
 		state.inventory.push(payload);
 	},

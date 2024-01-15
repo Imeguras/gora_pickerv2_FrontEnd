@@ -2,7 +2,7 @@
 ion-page
   ion-header(:translucent="true")
     ion-toolbar#toolbar_inventory
-      ion-menu-button(slot="start")
+      ion-menu-button(slot="start" auto-hide="false" menu="main-content")
       ion-title#title_inventory GoraPicker{{capitalizeFirstLetter(componentInRouter)}}
   ion-router-outlet
   

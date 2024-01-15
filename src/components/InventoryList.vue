@@ -1,14 +1,14 @@
 <template lang="pug">
-ion-page
-  ion-menu(content-id="main-content")
-    ion-content(:fullscreen="true")
-      ion-toolbar
-        ion-title Options
-      ion-content
-        ion-list
-          ion-item
-            ion-text#display_mode_label  Display Cascading Nodes Mode
-            ion-toggle(slot="end" aria-labelledby="display_mode_label" v-model="display_mode" :enable-on-off-labels="true")
+ion-menu(content-id="main-content")
+  ion-content(:fullscreen="true")
+    ion-toolbar
+      ion-title Options
+    ion-content
+      ion-list
+        ion-item
+          ion-text#display_mode_label  Display Cascading Nodes Mode
+          ion-toggle(slot="end" aria-labelledby="display_mode_label" v-model="display_mode" :enable-on-off-labels="true")
+ion-page#main-content
   ion-content
     .ion-padding
     ion-searchbar(animated)
@@ -194,18 +194,9 @@ export default {
             fontFamily: "monospace",
             fontSize: 11,
             lineHeight: 1.1,
-            color: "#ffffff",
+            color:"#3880ff",
             margin: 4,
-            direction: "south",
-            background: {
-              visible: false,
-              color: "#ffffff",
-              padding: {
-                vertical: 1,
-                horizontal: 4,
-              },
-              borderRadius: 2,
-            },
+            direction: "south"
           },
           focusring: {
             visible: true,
