@@ -1,23 +1,28 @@
 <template lang="pug">
-ion-page
-  ion-menu(content-id="main-content")
-    ion-content(:fullscreen="true")
-      ion-toolbar
-        ion-title Options
-      ion-content
-        ion-list
-          ion-item
-            ion-text#display_mode_label  Display Cascading Nodes Mode
-            ion-toggle(slot="end" aria-labelledby="display_mode_label" v-model="display_mode" :enable-on-off-labels="true")
-  ion-content#main-content
+ion-menu(content-id="main-content")
+  ion-content(:fullscreen="true")
+    ion-toolbar
+      ion-title Options
+    ion-content
+      ion-list
+        ion-item
+          ion-text#display_mode_label  Display Cascading Nodes Mode
+          ion-toggle(slot="end" aria-labelledby="display_mode_label" v-model="display_mode" :enable-on-off-labels="true")
+ion-page#main-content
+  ion-content
     .ion-padding
     ion-searchbar(animated)
     v-network-graph(graph v-show="display_mode" :nodes="nodes" :edges="edges" :configs="config" :layouts="layouts")
-      ion-list(v-for="item in inventory" :key="item.id")
+      ion-list(v-for="item in database" :key="item.id")
         ion-item(style="display:flex; flex-direction:column; align-items:flex-start; space-between:wrap;")
           ion-img(:src="'manufacturers/' + item.manufacturer.toLowerCase() + '.png'" style="border-radius:50px; width: 64px; background-color: grey; margin-right:1em;")
           ion-text {{ item.code }}
-          ion-text {{ item.quantity }}
+          ion-text {{ item.manufacturer }}
+          ion-text {{ item.family }}
+          ion-text {{ item.packageType }}
+          ion-text {{ item.description }}
+
+
     ion-fab( vertical="bottom" horizontal="end" slot="fixed")
       ion-fab-button( @click="scan")
 
@@ -27,9 +32,7 @@ ion-page
  
 import { VNetworkGraph } from "v-network-graph"
 //import "v-network-graph/lib/style.css"
-import store from '@/store/index';
-
-import { ACTIONS_GENERALCHIPDETAILS } from '@/store/index';
+import store, { ACTIONS_CHIPS } from '@/store/index';
 
 import { 
     IonText,
@@ -52,7 +55,7 @@ import {
 import { mapGetters } from 'vuex';
 
 export default {
-  name: 'InventoryList',
+  name: 'DatabaseList',
   components: {
     VNetworkGraph,
     IonText, 
@@ -77,11 +80,11 @@ export default {
 
   },
   computed:{
-      ...mapGetters(['getGeneralChipDetails', 'getInventory'])
+      ...mapGetters(['getGeneralChipDetails', 'getDatabase'])
 
   },
   mounted(){
-    store.dispatch(ACTIONS_GENERALCHIPDETAILS.fetch, null).catch((error) => {
+    store.dispatch(ACTIONS_CHIPS.fetch, null).catch((error) => {
       console.log(error);
     });
 
@@ -89,9 +92,9 @@ export default {
   },
   watch: {
    
-   getInventory:{
+   getDatabase:{
     handler(value, oldValue){
-      this.inventory = value;
+      this.database = value;
 		},
     deep: true
    },
@@ -99,7 +102,7 @@ export default {
   getGeneralChipDetails:{
     handler(value, oldValue){
       const database = this.nodes.database
-      
+  
       this.nodes= {
         database: database,
         
@@ -125,18 +128,14 @@ export default {
     },
   },
   methods:{
-    
-    scan(){
-      this.$router.replace({path:'/inventory/scan'});
-     
-    }
+
   },
   data(){
     
   
     return{
       display_mode: true,
-      inventory: [],
+      database: [],
       nodes:{
         database: { name: "Database Origin" }
         

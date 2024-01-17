@@ -1,4 +1,5 @@
 <template lang="pug">
+
 ion-page
   ion-header(:translucent="true")
     ion-toolbar#toolbar_inventory
