@@ -43,6 +43,21 @@ const routes: Array<RouteRecordRaw> = [
 			component: Scan
 		}
 	]
+  }, 
+  {
+	path: '/database/',
+	component: () => import('@/views/DatabasePage.vue'),
+	children: [
+		{
+			path: '',
+			redirect: '/database/list'
+		},
+		{
+			path: 'list',
+			component: () => import('@/components/DatabaseList.vue')
+		},
+	
+	]
   }
 ]
 

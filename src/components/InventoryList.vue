@@ -20,6 +20,7 @@ ion-page
           ion-text {{ item.quantity }}
     ion-fab( vertical="bottom" horizontal="end" slot="fixed")
       ion-fab-button( @click="scan")
+        ion-icon(name="scan-outline")
 
 </template>
 
@@ -50,7 +51,14 @@ import {
     IonImg,
     IonRouterOutlet} from '@ionic/vue';
 import { mapGetters } from 'vuex';
-
+import { scanOutline,trash,add, listOutline } from 'ionicons/icons';
+import { addIcons } from 'ionicons';
+addIcons({
+  "scan-outline": scanOutline,
+  "trash": trash,
+  "add": add,
+  "list-outline": listOutline
+});
 export default {
   name: 'InventoryList',
   components: {

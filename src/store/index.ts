@@ -18,6 +18,7 @@ export interface State {
   inventory: BasicSemiCComp[];
   gchip_details: GeneralChipDetails[];
   database: GeneralChip[]; 
+  manufacturers: Manufacturer[];
   
 }
 export interface GeneralChipDetails {
@@ -34,13 +35,19 @@ export interface GeneralChip {
 	country_manufacture_abrv :string,
 	description :string,
 }
-
-
+export interface Manufacturer {
+	id: number;
+	name: string;
+}
 //mutations enumeration
 export const enum MUTATIONS_INVENTORY {
 	add =  'ADD_INVENTORY',
 	del =  'DEL_INVENTORY',
 
+}
+export const enum MUTATIONS_MANUFACTURERS {
+	set = 'SET_MANUFACTURERS'
+	
 }
 export const enum MUTATIONS_GENERALCHIPDETAILS {
 	add = 'ADD_GENERALCHIPDETAILS',
@@ -74,6 +81,9 @@ export const enum ACTIONS_CHIPS{
 }
 export const enum  ACTIONS_GENERALCHIPDETAILS {
 	fetch =  'FETCH_GENERALCHIPDETAILS'
+}
+export const enum ACTIONS_MANUFACTURERS {
+	fetch = 'FETCH_MANUFACTURERS'
 }
 const mutations: MutationTree<State> = {
 	
@@ -118,16 +128,16 @@ const mutations: MutationTree<State> = {
 		state.database[index] = payload;
 
 	},
+	[MUTATIONS_MANUFACTURERS.set](state, payload: Manufacturer[]) {	
+		state.manufacturers = payload;
+	},
+	
 
 
 	
 };
 
-const getters: any = {
-	getInventory: (state: State) => state.inventory,
-	getGeneralChipDetails: (state: State) => state.gchip_details,
-	getDatabase: (state: State) => state.database,
-};
+
 const actions: ActionTree<State, any> = {
 	async [ACTIONS_AUTH.login]({ commit }, payload: AccountRequest, ) {
 		await axios.post('/User/Login', payload)
@@ -145,9 +155,6 @@ const actions: ActionTree<State, any> = {
 		await axios.get('/Coverage/generalchip_details')
 		.then((response) => {
 			const data = response.data;
-			
-			console.log(data);
-			
 			commit(MUTATIONS_GENERALCHIPDETAILS.set, data);
 
 		}).catch((error) => {
@@ -181,10 +188,34 @@ const actions: ActionTree<State, any> = {
 			return Promise.reject(error);
 		})
 
+	},
+	async [ACTIONS_MANUFACTURERS.fetch]({ commit }) {
+		await axios.get('/Manufacturer').then((response) => {
+			const data = response.data;
+			//commit data
+			console.log(data);
+			commit(MUTATIONS_GENERALCHIP.set, data);
+		}).catch((error) => {
+			return Promise.reject(error);
+		})
+
 	}
 
 };
-
+const getters: any = {
+	getInventory: (state: State) => state.inventory,
+	getManufacturers: (state: State) => {
+		if(state.manufacturers.length === 0){
+			[ACTIONS_MANUFACTURERS.fetch];
+			return state.manufacturers;
+			
+		}else{
+			return state.manufacturers;
+		}
+	},
+	getGeneralChipDetails: (state: State) => state.gchip_details,
+	getDatabase: (state: State) => state.database,
+};
 
 export const key: InjectionKey<Store<State>> = Symbol();
 const state: State = {
@@ -194,6 +225,8 @@ const state: State = {
   gchip_details: [
   ],
   database: [
+  ],
+  manufacturers: [
   ]
 };
 

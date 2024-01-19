@@ -4,9 +4,11 @@ ion-page
     ion-toolbar#toolbar_inventory
       ion-menu-button(slot="start" auto-hide="false")
       ion-title#title_inventory GoraPicker{{capitalizeFirstLetter(componentInRouter)}}
-  ion-router-outlet
-  
-      
+  ion-content
+    ion-accordion-group(v-for="component in componentsAdd" :key="component")
+      ion-accordion
+        add-chip(:in_code="component")
+    ion-router-outlet
 </template>
       
 <script lang="ts">
@@ -20,13 +22,20 @@ import {
     IonTitle,
     IonHeader,
     IonContent,
-    IonToolbar, 
+    IonToolbar,
+    IonAccordion,
+    IonAccordionGroup,
     IonRouterOutlet} from '@ionic/vue';
+import AddChip from '../components/AddChip.vue';
+import store from '@/store';
 
 export default {
  
   
-  name: 'Inventory',
+  name: 'DatabasePage',
+  props:[
+    'in_codes',
+  ],
   components: {
     IonPage,
     IonFab, 
@@ -36,7 +45,10 @@ export default {
     IonHeader,
     IonContent, 
     IonToolbar, 
-    IonRouterOutlet
+    IonAccordionGroup,
+    IonAccordion,
+    IonRouterOutlet,
+    AddChip
       
       
   },
@@ -50,8 +62,13 @@ export default {
   },
   data() {
     return {
-      
+      componentsAdd: [],
       componentInRouter: this.$route.path
+    }
+  },
+  mounted() {
+    if (this.in_codes != undefined) {
+      this.componentsAdd = this.in_codes;
     }
   },
   methods: {

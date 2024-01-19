@@ -10,8 +10,6 @@ ion-page
               ion-text#display_mode_label  Advanced Mode
               ion-toggle(slot="end" aria-labelledby="display_mode_label" v-model="advanced_mode" :enable-on-off-labels="true")
   ion-content#main-content
-    //TODO fix below
-    ion-toast(:is-open="!permissable" message="Something went wrong with camera" position="top" color="danger" duration="2000")
     ion-content(v-if="advanced_mode")
       ion-list(v-for="(val, key, index) in barcodes_raw" :key="key")
           ion-item(style="display:flex; flex-direction:column; align-items:flex-start; space-between:wrap;")
@@ -25,7 +23,8 @@ ion-page
             ion-text(:aria-label="productQuantityLabel") Quantity
             ion-text(:aria-labelledby="productQuantityLabel" style="text-overflow: ellipsis") {{val.Quantity}}
             ion-button(slot="end" @click="removeBarcode(index)") Remove
-    ion-modal
+    ion-alert(:is-open="alertOpen" header="There are unresolved conflicts" subHeader="Not resolving them will result in loss of data. Do you want to discard the references that are unresolved?" :buttons="alertButtons")
+    ion-modal(:is-open="isModalOpen")
       ion-header
         ion-toolbar
           ion-title Dispatch Chips Resolution
@@ -36,31 +35,46 @@ ion-page
             ion-button(@click="confirmModal")
               | Confirm
       ion-content
+        ion-text(v-if="barcodes_resolved.length>0" style="font-weight:bold; font-size:1.5em; margin-top:1em; margin-bottom:1em;") Resolved Chips
         ion-list
           ion-item(v-for="(val, key, index) in barcodes_resolved" :key="key")
-            ion-text(:aria-label="productPartNumberLabel" ) Part Number
-            ion-text(:aria-labelledby="productPartNumberLabel" style="text-overflow: ellipsis") {{val.PartNumber}}
+            ion-text(:aria-label="productPartNumberLabel" color="success") Pt. 
+            ion-text(:aria-labelledby="productPartNumberLabel" color="success" style="text-overflow: ellipsis") {{val.PartNumber}}
+        ion-text(v-if="barcodes_unresolved.length>0" style="font-weight:bold; font-size:1.5em; margin-top:1em; margin-bottom:1em;") Unresolved Chips
+        ion-list
           ion-item(v-for="(val, key, index) in barcodes_unresolved" :key="key")
-            ion-text(:aria-label="productPartNumberLabel" ) Part Number
-            ion-text(:aria-labelledby="productPartNumberLabel" style="text-overflow: ellipsis") {{val.PartNumber}}
+            ion-text(:aria-label="productPartNumberLabel" color="warning" ) Pt. 
+            ion-text(:aria-labelledby="productPartNumberLabel" color="warning" style="text-overflow: ellipsis") {{val.PartNumber}}
             
     ion-fab( vertical="bottom" horizontal="start" slot="fixed")
       ion-fab-button( @click="openModal")
+        ion-icon(name="add")
     ion-fab( vertical="bottom" horizontal="center" slot="fixed")
-      ion-fab-button( @click="scanBarcode")
+      ion-fab-button(  @click="scanBarcode")
+        ion-icon(name="scan-outline")
     ion-fab(vertical="bottom" horizontal="end" slot="fixed")
       ion-fab-button( @click="inv")
-        
+        ion-icon(name="list-outline")
 </template>
 <script>
-import { IonMenu,IonTitle,IonToolbar,IonHeader,IonToast,IonContent,IonButtons,IonButton,IonModal, IonPage, IonList,IonText,IonFab, IonFabButton, IonIcon, IonItem, IonToggle} from '@ionic/vue';
+import { IonAlert,IonMenu,IonTitle,IonToolbar,IonHeader,IonToast,IonContent,IonButtons,IonButton,IonModal, IonPage, IonList,IonText,IonFab, IonFabButton, IonIcon, IonItem, IonToggle} from '@ionic/vue';
 import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { matrixToValues,teConversion} from '../utils/matrix';
 import store,{ ACTIONS_CHIPS } from '../store/index';
+import { scanOutline,trash,add, listOutline } from 'ionicons/icons';
+import { addIcons } from 'ionicons';
+addIcons({
+  'scan-outline': scanOutline,
+  'trash': trash,
+  'add': add, 
+  'list-outline': listOutline
+});
+
 
 export default {
   name: 'Scan',
   components: {
+    IonAlert,
     IonHeader,
     IonToolbar,
     IonContent,
@@ -93,16 +107,19 @@ export default {
       this.barcodes_processed.splice(index,1);
 
     },
-    async onWillDismiss() {
-      console.log('will dismiss');
-      
-    },
     async cancelModal() {
       this.isModalOpen = false;
     },
     
     confirmModal() {
-      this.isModalOpen = false;  
+      //this.isModalOpen = false; 
+      if(this.barcodes_unresolved.length>0){
+        this.alertOpen = true;
+
+      }else{
+        //TODO: add chips
+        this.isModalOpen = false;
+      }
     },
     async prepareBarcode(){
       
@@ -146,12 +163,10 @@ export default {
     },
     openModal(){
       this.isModalOpen = true;
-      console.log("import");
-      /*this.isOpen = true;
-      console.log("HELLLOOOO");
       this.barcodes_resolved = [];
       this.barcodes_unresolved = [];
-      this.barcodes_processed.foreach((barcode)=>{
+      console.log(this.barcodes_processed)
+      this.barcodes_processed.forEach((barcode)=>{
         //check if barcode exists in database
         //if not, add to unresolved
         //if so, add to resolved
@@ -160,11 +175,10 @@ export default {
           this.barcodes_resolved.push(barcode);
           console.log(result)
         }).catch((error)=>{
-          console.log("erro aqui!"+error)
           this.barcodes_unresolved.push(barcode);
           
         })
-      })*/
+      })
     },
     inv() {
       
@@ -172,7 +186,9 @@ export default {
     }
   },
   data() {
+    const alertButtons = [{text: 'Discard',role: 'cancel',handler: () => {this.alertOpen = false;this.isModalOpen = false;this.inv()},},{text: 'Resolve Conflicts',role: 'confirm',handler: () => {this.alertOpen = false;this.$router.replace({path:"/database/"})},}];
     return {
+      alertOpen: false,
       isModalOpen: false,
       advanced_mode: false,
       permissable: true,
@@ -181,7 +197,7 @@ export default {
       barcodes_processed:[], 
       barcodes_resolved:[],
       barcodes_unresolved:[],
-    
+      alertButtons
 
     }
   },
