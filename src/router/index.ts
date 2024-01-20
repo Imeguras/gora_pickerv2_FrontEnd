@@ -13,6 +13,7 @@ const routes: Array<RouteRecordRaw> = [
     redirect: '/auth/login'
   },
   {
+	name: 'auth',
 	path: '/auth/',
 	component: AuthPage,
 	children: [
@@ -27,6 +28,7 @@ const routes: Array<RouteRecordRaw> = [
 	],
   },
   {
+	name: 'inventory',
     path: '/inventory/',
 	component: Inventory,
 	children: [
@@ -47,14 +49,18 @@ const routes: Array<RouteRecordRaw> = [
   {
 	path: '/database/',
 	component: () => import('@/views/DatabasePage.vue'),
+	props: route => ({in_codes: route.query.in_codes}),
 	children: [
 		{
 			path: '',
-			redirect: '/database/list'
+			redirect: '/database/list/'
 		},
+
 		{
-			path: 'list',
-			component: () => import('@/components/DatabaseList.vue')
+			name: 'database',
+			path: 'list/',
+			component: () => import('@/components/DatabaseList.vue'),
+			
 		},
 	
 	]
@@ -66,8 +72,7 @@ const router = createRouter({
   routes
 })
 //before each route check if user is logged in
-router.beforeEach((to, from, next) => {
-	//console.log("done!!!"+axios.defaults.headers.common['Authorization']); 
+router.beforeEach(async (to, from, next) => {
   if (to.path !== '/auth/login' && !axios.defaults.headers.common['Authorization']) {
 	next('/auth/login');
 

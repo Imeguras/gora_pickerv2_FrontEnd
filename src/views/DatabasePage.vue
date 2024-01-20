@@ -2,13 +2,19 @@
 ion-page
   ion-header(:translucent="true")
     ion-toolbar#toolbar_inventory
-      ion-menu-button(slot="start" auto-hide="false")
+      ion-menu-button(:slot="slot_side" auto-hide="false")
       ion-title#title_inventory GoraPicker{{capitalizeFirstLetter(componentInRouter)}}
+  .ion-padding
   ion-content
+    ion-text(style="font-weight:bold; font-size:1.5em; margin-top:1em; margin-bottom:1em;") Add Chips
     ion-accordion-group(v-for="component in componentsAdd" :key="component")
       ion-accordion
-        add-chip(:in_code="component")
-    ion-router-outlet
+        ion-item(slot="header" color="light")
+          ion-label {{component}}
+        add-chip(:in_code="component") 
+    ion-content
+      ion-backdrop(v-if="componentsAdd.length===0")
+        ion-router-outlet
 </template>
       
 <script lang="ts">
@@ -16,37 +22,42 @@ ion-page
 
 import { 
     IonPage,
+    IonBackdrop,
     IonFab, 
     IonFabButton,
     IonMenuButton,
     IonTitle,
+    IonText,
     IonHeader,
     IonContent,
     IonToolbar,
     IonAccordion,
     IonAccordionGroup,
+    IonLabel,
+    IonItem,
     IonRouterOutlet} from '@ionic/vue';
 import AddChip from '../components/AddChip.vue';
 import store from '@/store';
-
+import {isPlatform} from '@ionic/vue';
 export default {
  
   
   name: 'DatabasePage',
-  props:[
-    'in_codes',
-  ],
   components: {
     IonPage,
-    IonFab, 
+    IonBackdrop,
+    IonFab,
+    IonText,
     IonFabButton,
     IonMenuButton,
     IonTitle,
     IonHeader,
     IonContent, 
+    IonItem,
     IonToolbar, 
     IonAccordionGroup,
     IonAccordion,
+    IonLabel,
     IonRouterOutlet,
     AddChip
       
@@ -62,14 +73,20 @@ export default {
   },
   data() {
     return {
-      componentsAdd: [],
+      slot_side: "start",
+      componentsAdd: [""],
       componentInRouter: this.$route.path
     }
   },
   mounted() {
-    if (this.in_codes != undefined) {
-      this.componentsAdd = this.in_codes;
+    if (isPlatform('desktop')) {
+      this.slot_side = "end";
     }
+    const in_codes : Array<string> = this.$route.query.in_codes
+    if (in_codes != undefined) {
+      this.componentsAdd = in_codes;
+    }
+
   },
   methods: {
       capitalizeFirstLetter(s:string) {

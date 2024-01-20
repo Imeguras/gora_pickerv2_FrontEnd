@@ -2,8 +2,11 @@
 ion-page
   ion-header(:translucent="true")
     ion-toolbar#toolbar_inventory
-      ion-menu-button(slot="start" auto-hide="false")
+      ion-menu-button(:slot="slot_side" auto-hide="false")
       ion-title#title_inventory GoraPicker{{capitalizeFirstLetter(componentInRouter)}}
+  //side-navigator(v-if="slot_side=='end'")
+    .ion-page#page-content
+      ion-page Test
   ion-router-outlet
   
       
@@ -23,6 +26,9 @@ import {
     IonToolbar, 
     IonRouterOutlet} from '@ionic/vue';
 
+import {isPlatform,getPlatforms} from '@ionic/vue';
+import SideNavigator, {validPlatforms} from '@/components/SideNavigator.vue';
+
 export default {
  
   
@@ -36,7 +42,8 @@ export default {
     IonHeader,
     IonContent, 
     IonToolbar, 
-    IonRouterOutlet
+    IonRouterOutlet,
+    SideNavigator
       
       
   },
@@ -48,9 +55,14 @@ export default {
       
     }
   },
+  mounted() {
+    
+    validPlatforms.some(isPlatform) ? this.slot_side = "end" : this.slot_side = "start";
+    
+  },
   data() {
     return {
-      
+      slot_side: undefined,
       componentInRouter: this.$route.path
     }
   },

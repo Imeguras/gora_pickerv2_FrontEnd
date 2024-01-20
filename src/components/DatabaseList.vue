@@ -21,11 +21,6 @@ ion-page
           ion-text {{ item.family }}
           ion-text {{ item.packageType }}
           ion-text {{ item.description }}
-
-
-    ion-fab( vertical="bottom" horizontal="end" slot="fixed")
-      ion-fab-button( @click="scan")
-
 </template>
 
 <script lang="ts">

@@ -88,50 +88,46 @@ export default {
       ...mapGetters(['getGeneralChipDetails', 'getInventory'])
 
   },
-  mounted(){
-    store.dispatch(ACTIONS_GENERALCHIPDETAILS.fetch, null).catch((error) => {
-      console.log(error);
-    });
-
-      
-  },
   watch: {
    
    getInventory:{
     handler(value, oldValue){
       this.inventory = value;
 		},
-    deep: true
+    deep: true,
+    immediate: true
    },
   
-  getGeneralChipDetails:{
-    handler(value, oldValue){
-      const database = this.nodes.database
-      
-      this.nodes= {
-        database: database,
+    getGeneralChipDetails:{
+      handler(value, oldValue){
+        const database = this.nodes.database
         
-      }
-      this.layouts = {
-        database: {x: 0, y: 0}
-      }
-      //foreach value
-      const size_value = Object.keys(value).length
-      for (const [key, val] of Object.entries(value)) {
-        
-        this.nodes[val] = {name: val}
-        this.edges[val] = {source: "database", target: val}
-        //key to number
-        const numKey = parseInt(key)
-        const theta = (Math.PI * numKey) / size_value;
-        const coordsX = 100 * Math.cos(theta);
-        const coordsY = 100 * Math.sin(theta);
-        this.layouts[val] = {x: coordsX, y: coordsY}
-      }
-    },
-      deep: true
+        this.nodes= {
+          database: database,
+          
+        }
+        this.layouts = {
+          database: {x: 0, y: 0}
+        }
+        //foreach value
+        const size_value = Object.keys(value).length
+        for (const [key, val] of Object.entries(value)) {
+          
+          this.nodes[val] = {name: val}
+          this.edges[val] = {source: "database", target: val}
+          //key to number
+          const numKey = parseInt(key)
+          const theta = (Math.PI * numKey) / size_value;
+          const coordsX = 100 * Math.cos(theta);
+          const coordsY = 100 * Math.sin(theta);
+          this.layouts[val] = {x: coordsX, y: coordsY}
+        }
+      },
+      deep: true,
+      immediate: true
     },
   },
+
   methods:{
     
     scan(){
@@ -144,7 +140,7 @@ export default {
   
     return{
       display_mode: true,
-      inventory: [],
+      inventory: null,
       nodes:{
         database: { name: "Database Origin" }
         
@@ -273,7 +269,12 @@ export default {
       }
       
     }
-  }
+  },
+  mounted() {
+    store.dispatch(ACTIONS_GENERALCHIPDETAILS.fetch, null).catch((error) => {
+      console.log(error);
+    });
+  },
 }
 
 </script>

@@ -38,6 +38,10 @@ export interface GeneralChip {
 export interface Manufacturer {
 	id: number;
 	name: string;
+	description?: string; 
+	financial_hq?: number;
+	parent?: number;
+	website?: string; 
 }
 //mutations enumeration
 export const enum MUTATIONS_INVENTORY {
@@ -61,6 +65,7 @@ export const enum MUTATIONS_GENERALCHIP {
 	set = 'SET_GENERALCHIP',
 	update = 'UPDATE_GENERALCHIP'
 }
+
 
 
 export const enum ACTIONS_INVENTORY {
@@ -192,9 +197,8 @@ const actions: ActionTree<State, any> = {
 	async [ACTIONS_MANUFACTURERS.fetch]({ commit }) {
 		await axios.get('/Manufacturer').then((response) => {
 			const data = response.data;
-			//commit data
-			console.log(data);
-			commit(MUTATIONS_GENERALCHIP.set, data);
+			commit(MUTATIONS_MANUFACTURERS.set, data);
+			//commit(MUTATIONS_GENERALCHIP.set, data);
 		}).catch((error) => {
 			return Promise.reject(error);
 		})
@@ -213,7 +217,14 @@ const getters: any = {
 			return state.manufacturers;
 		}
 	},
-	getGeneralChipDetails: (state: State) => state.gchip_details,
+	getGeneralChipDetails: (state: State) => {
+		if(state.gchip_details.length === 0){
+			[ACTIONS_GENERALCHIPDETAILS.fetch];
+			return state.gchip_details
+		}else{
+			return state.gchip_details
+		}
+	},
 	getDatabase: (state: State) => state.database,
 };
 
