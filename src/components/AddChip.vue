@@ -7,8 +7,8 @@
       ion-label {{manufacturer.name}}
   ion-searchbar(animated placeholder="packagetype" v-model="selected_packagetype" :floating="true" :debounce="250" @ionInput="handleFilter('packagetype'); sel_packagetype = false")
   ion-list(v-if="sel_packagetype===false && selected_packagetype != ''  " style="height: 200px; overflow: auto;")
-    ion-item(v-for="packagetype in packagetype" :key="packagetype" @click="selected_packagetype = packagetype.name; sel_packagetype = true")
-      ion-label {{packagetype.name}}
+    ion-item(v-for="pack in packagetype" :key="pack.name" @click="selected_packagetype = pack.name; sel_packagetype = true")
+      ion-label {{pack.name}}
   ion-accordion-group 
     ion-accordion
       ion-item(slot="header" color="light")
@@ -194,7 +194,7 @@ export default {
           })
           break;
         case 'packagetype':
-          this.getPackageTypes = this.getPackageTypes.filter((packagetype:any) => {
+          this.packagetype = this.getPackageTypes.filter((packagetype:any) => {
             //find manufacturer which atribute name is similar to selected_manufacturer
             const pack= packagetype.name.match(this.selected_packagetype)
             return pack;
