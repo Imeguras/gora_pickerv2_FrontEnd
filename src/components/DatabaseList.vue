@@ -13,14 +13,14 @@ ion-page
     .ion-padding
     ion-searchbar(animated)
     v-network-graph(graph v-show="display_mode" :nodes="nodes" :edges="edges" :configs="config" :layouts="layouts")
-      ion-list(v-for="item in database" :key="item.id")
-        ion-item(style="display:flex; flex-direction:column; align-items:flex-start; space-between:wrap;")
-          ion-img(:src="'manufacturers/' + item.manufacturer.toLowerCase() + '.png'" style="border-radius:50px; width: 64px; background-color: grey; margin-right:1em;")
-          ion-text {{ item.code }}
-          ion-text {{ item.manufacturer }}
-          ion-text {{ item.family }}
-          ion-text {{ item.packageType }}
-          ion-text {{ item.description }}
+    ion-list(v-for="item in database" :key="item.id")
+      ion-item(style="display:flex; flex-direction:column; align-items:flex-start; space-between:wrap;")
+        ion-img(:src="'manufacturers/' + item.manufacturer.toLowerCase() + '.png'" style="border-radius:50px; width: 64px; background-color: grey; margin-right:1em;")
+        ion-text {{ item.code }}
+        ion-text {{ item.manufacturer }}
+        ion-text {{ item.family }}
+        ion-text {{ item.packageType }}
+        ion-text {{ item.description }}
 </template>
 
 <script lang="ts">
@@ -73,6 +73,9 @@ export default {
       
       
 
+  },
+  emits: {
+    'click:chip': null
   },
   computed:{
       ...mapGetters(['getGeneralChipDetails', 'getDatabase'])

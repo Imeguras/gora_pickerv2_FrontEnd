@@ -1,28 +1,20 @@
-<template>
-<div id="container">
-  <ion-header id="title_header">
-    <ion-toolbar>
-      <ion-title id="title_login">Gora Picker </ion-title>
-    </ion-toolbar>
-  </ion-header>
-  <ion-card>
-    <ion-card-title>Welcome Back!</ion-card-title>
-    <ion-card-content>
-      <ion-item>
-        <ion-label position="floating">Email</ion-label>
-        <ion-input type="email" v-model="auth.email" />
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Password</ion-label>
-        <ion-input type="password" v-model="auth.password"/>
-      </ion-item>
-      <ion-button expand="block" @click="login">Login</ion-button>
-      <ion-button expand="block" fill="clear" id="register">Register</ion-button>
-       <ion-toast trigger="register" message="As of right now, its impossible to create new accounts, talk to the admin" :duration="5000"></ion-toast>
-    </ion-card-content>
-  </ion-card>
-</div>
-</template>
+<template lang="pug">
+ion-content(:fullscreen="true" scroll-y="false" scroll-x="false" style="display:flex;align-items:center;justify-items:center;flex-direction:row;")
+  ion-header#title_header
+      ion-toolbar 
+        ion-title#title_login Gora Picker
+  ion-page.loginPage
+    ion-card
+      ion-card-title Welcome Back!
+      ion-card-content.inputsGroup
+        ion-item.inputs
+          ion-input(label="Email" label-placement="floating" type="email" v-model="auth.email")
+        ion-item.inputs
+          ion-input(label="Password" label-placement="floating" type="password" v-model="auth.password")
+      ion-button(expand="block" @click="login") Login
+      ion-button(expand="block" fill="clear" id="register") Register
+      ion-toast(trigger="register" message="As of right now, its impossible to create new accounts, talk to the admin" :duration="5000")
+  </template>
 
 <script lang="ts">
 
@@ -31,6 +23,8 @@ import { IonToolbar,
     IonCardTitle,
     IonCardContent,
     IonTitle,
+    IonContent,
+    IonPage,
     IonItem,
     IonLabel,
     IonInput,
@@ -46,8 +40,10 @@ export default {
   name: 'Login',
   components: {
     IonHeader,
+    IonContent,
     IonToolbar,
     IonCard,
+    IonPage,
     IonCardTitle,
     IonCardContent,
     IonTitle,
@@ -110,6 +106,84 @@ export default {
 </script>
 
 <style scoped>
+ion-card-title {
+  
+  font-size: 30px;
+  font-weight: bold;
+}
+.loginPage {
+ 
+  margin: auto;
+  padding: 2em;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-self: center;
+  align-content: center;
+  
+  /*border: 1px solid #ccc;*/
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  
+}
+ion-card{
+  align-self:center; 
+  width: 40%;
+}
+
+.loginPage>ion-card{
+  padding: 4em;
+  border-radius: 25px;
+  /*Center */
+  justify-self: center;
+  justify-content: center;
+
+}
+
+@media (min-width:320px)  {
+   /* smartphones, iPhone, portrait 480x320 phones */ 
+    ion-card{
+      width: 90% !important;
+      margin-top: 10em;
+    }
+ .inputsGroup{
+    margin-block: 2em;
+    margin-bottom: 3em !important;
+    
+  }
+  .inputs{
+    margin-block: 1em !important;
+  }
+}
+
+/*@media (min-width:641px)  { 
+
+  ion-card{
+    width: 70% !important;
+  }
+  .inputsGroup{
+    margin-block: 2em;
+    margin-bottom: 3em !important;
+    
+  }
+  .inputs{
+    margin-block: 1em !important;
+  }
+}*/
+@media (min-width:1025px) {
+  ion-card{
+  
+    width: 40% !important;
+  }
+  .inputsGroup{
+    margin-block: 2em;
+    margin-bottom: 3em !important;
+    
+  }
+  .inputs{
+    margin-block: 1em !important;
+  }
+}
+
 #title_header {
   position: sticky;
   top: 0;
@@ -126,7 +200,7 @@ export default {
   position: absolute;
   left: 0;
   right: 0;
-  top: 50%;
+  
   transform: translateY(-50%);
 }
 

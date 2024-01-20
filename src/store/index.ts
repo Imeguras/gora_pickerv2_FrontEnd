@@ -19,21 +19,28 @@ export interface State {
   gchip_details: GeneralChipDetails[];
   database: GeneralChip[]; 
   manufacturers: Manufacturer[];
+  package_types: PackageType[];
   
 }
 export interface GeneralChipDetails {
 	display_name: string;
 	children: number[]; 
+
+}
+export interface PackageType {
+	id: number;
+	name: string;
+	solder_type: number;
 }
 export interface GeneralChip {
 	code:string,
-	eol:Date,
-	pinDetails:number, 
-	family :string,
-	packageType :string,
+	packageType:string,
 	manufacturer :string,
-	country_manufacture_abrv :string,
-	description :string,
+	eol?:Date,
+	pinDetails?:number, 
+	family?:string,
+	country_manufacture_abrv?:string,
+	description?:string,
 }
 export interface Manufacturer {
 	id: number;
@@ -65,7 +72,9 @@ export const enum MUTATIONS_GENERALCHIP {
 	set = 'SET_GENERALCHIP',
 	update = 'UPDATE_GENERALCHIP'
 }
-
+export const enum MUTATIONS_PACKAGETYPE{
+	set = 'SET_PACKAGETYPE'
+}
 
 
 export const enum ACTIONS_INVENTORY {
@@ -89,6 +98,9 @@ export const enum  ACTIONS_GENERALCHIPDETAILS {
 }
 export const enum ACTIONS_MANUFACTURERS {
 	fetch = 'FETCH_MANUFACTURERS'
+}
+export const enum ACTIONS_PACKAGETYPE {
+	fetch = 'FETCH_PACKAGETYPE'
 }
 const mutations: MutationTree<State> = {
 	
@@ -136,7 +148,10 @@ const mutations: MutationTree<State> = {
 	[MUTATIONS_MANUFACTURERS.set](state, payload: Manufacturer[]) {	
 		state.manufacturers = payload;
 	},
-	
+	[MUTATIONS_PACKAGETYPE.set](state, payload: PackageType[]) {
+		state.package_types = payload;
+		
+	}
 
 
 	
@@ -203,6 +218,16 @@ const actions: ActionTree<State, any> = {
 			return Promise.reject(error);
 		})
 
+	},
+	async [ACTIONS_PACKAGETYPE.fetch]({ commit }) {
+		await axios.get('/PackageType').then((response) => {
+			const data = response.data;
+			commit(MUTATIONS_PACKAGETYPE.set, data);
+			//commit(MUTATIONS_GENERALCHIP.set, data);
+		}).catch((error) => {
+			return Promise.reject(error);
+		})
+
 	}
 
 };
@@ -225,7 +250,22 @@ const getters: any = {
 			return state.gchip_details
 		}
 	},
-	getDatabase: (state: State) => state.database,
+	getPackageTypes: (state: State) => {
+		if(state.package_types.length === 0){
+			[ACTIONS_PACKAGETYPE.fetch];
+			return state.package_types
+		}else{
+			return state.package_types
+		}
+	},
+	getDatabase: (state: State) => {
+		if(state.database.length === 0){
+			[ACTIONS_CHIPS.fetch];
+			return state.database
+		}else{
+			return state.database
+		}
+	}
 };
 
 export const key: InjectionKey<Store<State>> = Symbol();
@@ -238,6 +278,8 @@ const state: State = {
   database: [
   ],
   manufacturers: [
+  ], 
+  package_types: [
   ]
 };
 

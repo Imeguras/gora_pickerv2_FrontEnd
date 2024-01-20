@@ -13,7 +13,7 @@ ion-page
           ion-label {{component}}
         add-chip(:in_code="component") 
     ion-content
-      ion-backdrop(v-if="componentsAdd.length===0")
+      ion-backdrop(:visible="!componentsAdd.length")
         ion-router-outlet
 </template>
       
@@ -60,9 +60,8 @@ export default {
     IonLabel,
     IonRouterOutlet,
     AddChip
-      
-      
   },
+  
   watch: {
     '$route.path' (to, from) {
       if(this.$route.path!=undefined){
