@@ -59,12 +59,15 @@ ion-page
 </template>
 <script>
 import { IonAlert,IonMenu,IonTitle,IonToolbar,IonHeader,IonToast,IonContent,IonButtons,IonButton,IonModal, IonPage, IonList,IonText,IonFab, IonFabButton, IonIcon, IonItem, IonToggle, IonRouterOutlet} from '@ionic/vue';
-import barcodeScanner from '../utils/BarcodeScanner_Abs'
 import { matrixToValues,teConversion} from '../utils/matrix';
-import {isPlatform} from '@ionic/vue';
+import { isPlatform } from '@ionic/vue';
 import store,{ ACTIONS_CHIPS } from '../store/index';
 import { scanOutline,trash,add, listOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
+import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
+
+
+
 addIcons({
   'scan-outline': scanOutline,
   'trash': trash,
@@ -92,7 +95,7 @@ export default {
     IonButtons,
     IonButton,
     IonIcon,
-    barcodeScanner,
+    BarcodeScanner,
     IonModal,
     IonMenu, 
     IonToast
@@ -100,10 +103,9 @@ export default {
   
   mounted() {
     this.prepareBarcode(); 
-    
+    this.scanBarcode();
 
   },
-  
   methods: {
     removeBarcode(index){
       this.barcodes_raw.splice(index,1);
@@ -126,46 +128,51 @@ export default {
       }
     },
     async prepareBarcode(){
-      
-      await barcodeScanner.isSupported().then((result) => {
-        console.log(result.value);
-        this.permissable = result.value;
-      });
-  //if built for iphone
-      if(isPlatform('ios')){
-        await barcodeScanner.checkPermissions({ force: true }).then((result) => {
-          this.permissable = result.camera === 'granted';
-        }).catch((error) => {
-          console.log("perms blocked"+error);
-        })
-      }
-      
-
-      if(!barcodeScanner.isGoogleBarcodeScannerModuleAvailable) {
-
-        await barcodeScanner.installGoogleBarcodeScannerModule();
+      if(isPlatform('capacitor')){
+        await BarcodeScanner.isSupported().then((result) => {
+          console.log(result.value)
+          this.permissable = result.value;
+        });
+    //if built for iphone
+        if(isPlatform('ios')){
+          await BarcodeScanner.checkPermissions({ force: true }).then((result) => {
+            this.permissable = result.camera === 'granted';
+          }).catch((error) => {
+            console.log("perms blocked"+error);
+          })
+        }
         
+
+        if(!BarcodeScanner.isGoogleBarcodeScannerModuleAvailable) {
+
+          await BarcodeScanner.installGoogleBarcodeScannerModule();
+          
+        }
+      }else{
+        console.log("Not running capacitor skipping Camera Setup")
+        return; 
       }
-      this.scanBarcode();
       
     },
     async scanBarcode() {
       try{
-        console.log(this.permissable);
-        if(this.permissable){
-          barcodeScanner.scan().then(((result) => {
+        
+        //wait for this.permissable to be true with a timeout of 2000ms
+        console.log("permissable: "+this.permissable)
+        //:if(this.permissable){ //TODO: fix this
+          BarcodeScanner.scan().then(((result) => {
             //console.log enumerate objects properties and functions
-            console.log(result.barcodes);
-            result.barcodes.forEach(barcode => {
             
-              const obj = matrixToValues(barcode.rawValue);
+            result.barcodes.forEach(barcode => {
+              console.log(barcode.rawValue);
               this.barcodes_raw.push(barcode.rawValue);
+              const obj = matrixToValues(barcode.rawValue);
               this.barcodes_processed.push(teConversion(obj))
 
             });
             
           }));
-        }
+        //}
       }catch(error){
         this.permissable = false;
       
@@ -185,7 +192,7 @@ export default {
         store.dispatch(ACTIONS_CHIPS.get, PartNumber).then((result)=>{
           this.barcodes_resolved.push(barcode);
           console.log(result)
-        }).catch((error)=>{
+        }).catch(()=>{
           this.barcodes_unresolved.push(barcode);
           
         })
@@ -194,7 +201,8 @@ export default {
     inv() {
       
       this.$router.replace({path:'/inventory/list'});
-    }
+    }, 
+    
   },
   data() {
     const alertButtons = [{text: 'Discard',role: 'cancel',handler: () => {this.alertOpen = false;this.isModalOpen = false;this.inv()},},{text: 'Resolve Conflicts',role: 'confirm',handler: () => {this.alertOpen = false;this.isModalOpen = false;this.$router.replace({name:"database", query: { in_codes: this.barcodes_unresolved.map((x)=> x.PartNumber)}})},}];
@@ -202,10 +210,11 @@ export default {
       alertOpen: false,
       isModalOpen: false,
       advanced_mode: false,
+      //TODO FIX this
       permissable: true,
       setup: false,
       barcodes_raw:[],
-      barcodes_processed:[{PartNumber:"teste", Quantity:5}], 
+      barcodes_processed:[], 
       barcodes_resolved:[],
       barcodes_unresolved:[],
       alertButtons
@@ -218,7 +227,13 @@ export default {
 <style scoped>
 ion-item>ion-text:nth-child(even){
    /* put a soft | at each side*/
-  border-inline: 2px solid #aaa;
+  border-inline: 1px solid #aaa;
+}
+@media (min-width: 768px) {
+  ion-item>ion-text:nth-child(even){
+    /* put a soft | at each side*/
+    border-inline: 2px solid #aaa;
+  }
 }
 ion-item>ion-text {
   padding-inline: 1em;
