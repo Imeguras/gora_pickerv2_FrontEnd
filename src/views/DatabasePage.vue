@@ -6,15 +6,16 @@ ion-page
       ion-title#title_inventory GoraPicker{{capitalizeFirstLetter(componentInRouter)}}
   .ion-padding
   ion-content
-    ion-text(style="font-weight:bold; font-size:1.5em; margin-top:1em; margin-bottom:1em;") Add Chips
-    ion-accordion-group(v-for="component in componentsAdd" :key="component")
-      ion-accordion
-        ion-item(slot="header" color="light")
-          ion-label {{component}}
-        add-chip(:in_code="component") 
+    ion-content(v-if="componentsAdd.length")
+      ion-text(style="font-weight:bold; font-size:1.5em; margin-top:1em; margin-bottom:1em;") Add Chips
+      ion-accordion-group(v-for="component in componentsAdd" :key="component")
+        ion-accordion
+          ion-item(slot="header" color="light")
+            ion-label {{component}}
+          add-chip(:in_code="component") 
     ion-content
-      ion-backdrop(:visible="!componentsAdd.length")
-        ion-router-outlet
+      //ion-backdrop(:visible="!componentsAdd.length")
+      ion-router-outlet 
 </template>
       
 <script lang="ts">
@@ -71,9 +72,10 @@ export default {
     }
   },
   data() {
+    const componentsAdd: Array<string> = [];
     return {
       slot_side: "start",
-      componentsAdd: [""],
+      componentsAdd,
       componentInRouter: this.$route.path
     }
   },

@@ -41,6 +41,10 @@ ion-page
           ion-item(v-for="(val, key, index) in barcodes_resolved" :key="key")
             ion-text(aria-label="productPartResolvedNumberLabelModal" color="success") Pt. 
             ion-text(aria-labelledby="productPartResolvedNumberLabelModal" color="success" style="text-overflow: ellipsis") {{val.PartNumber}}
+            ion-text(aria-label="manufacturerResolvedNumberLabelModal" color="success") Mf:
+            ion-text(aria-labelledby="manufacturerResolvedNumberLabelModal" color="success" style="text-overflow: ellipsis") {{val.resolved.manufacturer.name}}
+            ion-text(aria-label="desResolvedNumberLabelModal" color="success") Des:
+            ion-text(aria-labelledby="desResolvedNumberLabelModal" color="success" style="text-overflow: ellipsis") {{val.resolved.manufacturer.description}}
         ion-text(v-if="barcodes_unresolved.length>0" style="font-weight:bold; font-size:1.5em; margin-top:1em; margin-bottom:1em;") Unresolved Chips
         ion-list
           ion-item(v-for="(val, key, index) in barcodes_unresolved" :key="key")
@@ -61,7 +65,7 @@ ion-page
 import { IonAlert,IonMenu,IonTitle,IonToolbar,IonHeader,IonToast,IonContent,IonButtons,IonButton,IonModal, IonPage, IonList,IonText,IonFab, IonFabButton, IonIcon, IonItem, IonToggle, IonRouterOutlet} from '@ionic/vue';
 import { matrixToValues,teConversion} from '../utils/matrix';
 import { isPlatform } from '@ionic/vue';
-import store,{ ACTIONS_CHIPS } from '../store/index';
+import store,{ ACTIONS_CHIPS, ACTIONS_INVENTORY } from '../store/index';
 import { scanOutline,trash,add, listOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
@@ -112,21 +116,7 @@ export default {
       this.barcodes_processed.splice(index,1);
 
     },
-    async cancelModal() {
-      this.isModalOpen = false;
-      this.alertOpen = false;
-    },
     
-    confirmModal() {
-      //this.isModalOpen = false; 
-      if(this.barcodes_unresolved.length>0){
-        this.alertOpen = true;
-
-      }else{
-        //TODO: add chips
-        this.cancelModal();
-      }
-    },
     async prepareBarcode(){
       if(isPlatform('capacitor')){
         await BarcodeScanner.isSupported().then((result) => {
@@ -190,13 +180,46 @@ export default {
         //if so, add to resolved
         const PartNumber = barcode.PartNumber;
         store.dispatch(ACTIONS_CHIPS.get, PartNumber).then((result)=>{
+          barcode.resolved= result; 
+          console.log("resolved: "+barcode.resolved.code);
           this.barcodes_resolved.push(barcode);
-          console.log(result)
-        }).catch(()=>{
+          
+
+        }).catch((err)=>{
+          console.log("error: "+err.code+" "+err.message);
           this.barcodes_unresolved.push(barcode);
           
         })
       })
+    },
+    async cancelModal() {
+      this.isModalOpen = false;
+      this.alertOpen = false;
+    },
+    
+    confirmModal() {
+        if(this.barcodes_resolved.length>0){
+          const sucessfullyAdded = [
+            
+          ];
+          this.barcodes_resolved.forEach((barcode)=>{
+            //TODO fix DTO's
+            sucessfullyAdded.push({"quantity": barcode.Quantity, "code": barcode.PartNumber, "manufacturer": barcode.resolved.manufacturer.name});
+          })
+          store.dispatch(ACTIONS_INVENTORY.add, sucessfullyAdded).then(()=>{
+              this.$toast.show("Succefully Added Inventory");
+            }).catch((error)=>{
+                
+            this.$toast.error("Failed:"+error);
+          })
+        }
+      
+      if(this.barcodes_unresolved.length>0){
+        this.alertOpen = true;
+
+      }else{
+        this.cancelModal();
+      }
     },
     inv() {
       

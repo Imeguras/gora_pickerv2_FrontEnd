@@ -199,8 +199,6 @@ export default {
             const pack= packagetype.name.match(this.selected_packagetype)
             return pack;
           })
-
-          
           break;
         case 'family':
         break;

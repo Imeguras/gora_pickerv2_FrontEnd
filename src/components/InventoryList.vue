@@ -13,14 +13,17 @@ ion-page
     .ion-padding
     ion-searchbar(animated)
     v-network-graph(graph v-show="display_mode" :nodes="nodes" :edges="edges" :configs="config" :layouts="layouts")
-      ion-list(v-for="item in inventory" :key="item.id")
-        ion-item(style="display:flex; flex-direction:column; align-items:flex-start; space-between:wrap;")
-          ion-img(:src="'manufacturers/' + item.manufacturer.toLowerCase() + '.png'" style="border-radius:50px; width: 64px; background-color: grey; margin-right:1em;")
-          ion-text {{ item.code }}
-          ion-text {{ item.quantity }}
+    ion-list(v-for="item in inventory" :key="item.id")
+      ion-item(style="display:flex; flex-direction:column; align-items:flex-start; space-between:wrap;")
+        ion-img(:src="'manufacturers/' + item.manufacturer.toLowerCase() + '.png'" style="border-radius:50px; width: 64px; background-color: grey; margin-right:1em;")
+        ion-text {{ item.code }}
+        ion-text {{ item.quantity }}
     ion-fab( vertical="bottom" horizontal="end" slot="fixed")
       ion-fab-button( @click="scan")
         ion-icon(name="scan-outline")
+    ion-fab( vertical="bottom" horizontal="start" slot="fixed")
+      ion-fab-button( @click="this.$router.replace({path:'/database/list'})")
+        ion-icon(name="trash")
 
 </template>
 
@@ -28,7 +31,7 @@ ion-page
  
 import { VNetworkGraph } from "v-network-graph"
 //import "v-network-graph/lib/style.css"
-import store from '@/store/index';
+import store, { ACTIONS_INVENTORY } from '@/store/index';
 
 import { ACTIONS_GENERALCHIPDETAILS } from '@/store/index';
 
@@ -94,8 +97,8 @@ export default {
     handler(value, oldValue){
       this.inventory = value;
 		},
-    deep: true,
-    immediate: true
+    deep: true
+    
    },
   
     getGeneralChipDetails:{
@@ -123,8 +126,8 @@ export default {
           this.layouts[val] = {x: coordsX, y: coordsY}
         }
       },
-      deep: true,
-      immediate: true
+      deep: true
+      
     },
   },
 
@@ -271,9 +274,17 @@ export default {
     }
   },
   mounted() {
-    store.dispatch(ACTIONS_GENERALCHIPDETAILS.fetch, null).catch((error) => {
-      console.log(error);
-    });
+    if(this.getInventory.length === 0){
+      store.dispatch(ACTIONS_INVENTORY.fetch, null).catch((error) => {
+        this.$toast.error("Failed to fetch inventory")
+      });
+    }
+    if(this.getGeneralChipDetails.length === 0){
+      store.dispatch(ACTIONS_GENERALCHIPDETAILS.fetch, null).catch((error) => {
+        this.$toast.error("Failed to fetch metadata");
+      });
+    }
+    
   },
 }
 

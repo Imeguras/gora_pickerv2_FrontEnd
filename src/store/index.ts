@@ -13,6 +13,7 @@ export interface BasicSemiCComp {
   code: string;
   manufacturer: string;
   quantity: number;
+  extra_content: string;
 }
 export interface State {
   inventory: BasicSemiCComp[];
@@ -53,6 +54,7 @@ export interface Manufacturer {
 //mutations enumeration
 export const enum MUTATIONS_INVENTORY {
 	add =  'ADD_INVENTORY',
+	set = 'SET_INVENTORY',
 	del =  'DEL_INVENTORY',
 
 }
@@ -151,8 +153,7 @@ const mutations: MutationTree<State> = {
 	[MUTATIONS_PACKAGETYPE.set](state, payload: PackageType[]) {
 		state.package_types = payload;
 		
-	}
-
+	},
 
 	
 };
@@ -171,6 +172,11 @@ const actions: ActionTree<State, any> = {
 			return Promise.reject(error);
 		});
 	},
+	async [ACTIONS_AUTH.del]({ commit }) {
+		await axios.post('/User/Logout')
+		axios.defaults.headers.common['Authorization'] = '';
+		localStorage.removeItem('token');
+	},
 	async [ACTIONS_GENERALCHIPDETAILS.fetch]({ commit }) {
 		await axios.get('/Coverage/generalchip_details')
 		.then((response) => {
@@ -182,12 +188,21 @@ const actions: ActionTree<State, any> = {
 		});
 	},
 	async [ACTIONS_CHIPS.get]({ commit }, payload:string) {
+		let error_ret:any;
+		let sucess_ret:any;
 		await axios.get('/GenericChip/code/'+payload).then((response) => {
 			const data = response.data;
-			console.log(data);
+			sucess_ret = data;
+			
 		}).catch((error) => {
-			return Promise.reject(error);
+			error_ret = error; 
+			
 		}); 
+		if(error_ret){
+			return Promise.reject(error_ret);
+		}else{
+			return sucess_ret;
+		}
 	},
 	async [ACTIONS_CHIPS.fetch]({ commit }) {
 		await axios.get('/GenericChip').then((response) => {
@@ -228,11 +243,36 @@ const actions: ActionTree<State, any> = {
 			return Promise.reject(error);
 		})
 
+	},
+	async [ACTIONS_INVENTORY.fetch]({ commit }) {
+		await axios.get('/Inventory').then((response) => {
+			const data = response.data;
+			commit(MUTATIONS_INVENTORY.set, data);
+		}).catch((error) => {
+			return Promise.reject(error);
+		})
+	},
+	async [ACTIONS_INVENTORY.add]({ commit }, payload) {
+		await axios.post('/Inventory', payload).then(() => {
+			
+			commit(MUTATIONS_INVENTORY.add, payload);
+		}).catch((error) => {
+			return Promise.reject(error);
+		})
 	}
+
 
 };
 const getters: any = {
-	getInventory: (state: State) => state.inventory,
+	getInventory: (state: State) => {
+		if(state.inventory.length === 0){
+			[ACTIONS_INVENTORY.fetch];
+			return state.inventory;
+			
+		}else{
+			return state.inventory;
+		}
+	},
 	getManufacturers: (state: State) => {
 		if(state.manufacturers.length === 0){
 			[ACTIONS_MANUFACTURERS.fetch];

@@ -20,6 +20,7 @@ import '@ionic/vue/css/text-alignment.css';
 import '@ionic/vue/css/text-transformation.css';
 import '@ionic/vue/css/flex-utils.css';
 import '@ionic/vue/css/display.css';
+import Toaster from "@meforma/vue-toaster";
 
 /* Theme variables */
 import './theme/variables.css';
@@ -27,6 +28,7 @@ import './theme/variables.css';
 const app = createApp(App)
   .use(IonicVue)
   .use(router)
+  .use(Toaster)
   .use(store);
 
 axios.defaults.baseURL = config.apiURL

@@ -10,17 +10,16 @@ ion-page
             ion-text#display_mode_label  Display Cascading Nodes Mode
             ion-toggle(slot="end" aria-labelledby="display_mode_label" v-model="display_mode" :enable-on-off-labels="true")
   ion-content#main-content
-    .ion-padding
     ion-searchbar(animated)
     v-network-graph(graph v-show="display_mode" :nodes="nodes" :edges="edges" :configs="config" :layouts="layouts")
     ion-list(v-for="item in database" :key="item.id")
       ion-item(style="display:flex; flex-direction:column; align-items:flex-start; space-between:wrap;")
-        ion-img(:src="'manufacturers/' + item.manufacturer.toLowerCase() + '.png'" style="border-radius:50px; width: 64px; background-color: grey; margin-right:1em;")
+        //ion-img(:src="'manufacturers/' + item.manufacturer.toLowerCase() + '.png'" style="border-radius:50px; width: 64px; background-color: grey; margin-right:1em;")
         ion-text {{ item.code }}
-        ion-text {{ item.manufacturer }}
-        ion-text {{ item.family }}
-        ion-text {{ item.packageType }}
-        ion-text {{ item.description }}
+        //ion-text {{ item.manufacturer }}
+        //ion-text {{ item.family }}
+        //ion-text {{ item.packageType }}
+        //ion-text {{ item.description }}
 </template>
 
 <script lang="ts">
@@ -82,9 +81,11 @@ export default {
 
   },
   mounted(){
-    store.dispatch(ACTIONS_CHIPS.fetch, null).catch((error) => {
-      console.log(error);
-    });
+    if(this.getDatabase.length === 0){
+      store.dispatch(ACTIONS_CHIPS.fetch, null).catch((error) => {
+        console.log(error);
+      });
+    }
 
       
   },
