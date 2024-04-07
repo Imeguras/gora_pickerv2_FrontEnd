@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router';
 import store from './store';
 import { IonicVue } from '@ionic/vue';
-import { config } from './gora_config';
+//import * as Config from './gora_config';
 import axios from 'axios';
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
@@ -24,12 +24,26 @@ import Toaster from "@meforma/vue-toaster";
 
 /* Theme variables */
 import './theme/variables.css';
+import { Env } from 'ionicons/dist/types/stencil-public-runtime';
 
 const app = createApp(App)
   .use(IonicVue)
   .use(router)
   .use(Toaster)
   .use(store);
+
+let configModule: any; 
+let config: any;
+try{
+	configModule = require('./gora_config');
+	config = configModule.config
+}catch(error){
+	console.log(error);
+	config = {
+		apiURL: Env.FRONTEND_API_URL,
+		apiDomain: Env.FRONTEND_API_DOMAIN
+	}
+}
 
 axios.defaults.baseURL = config.apiURL
 
