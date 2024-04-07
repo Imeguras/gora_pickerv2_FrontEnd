@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router';
 import store from './store';
 import { IonicVue } from '@ionic/vue';
-import { config } from './gora_config';
+//import * as Config from './gora_config';
 import axios from 'axios';
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
@@ -25,11 +25,25 @@ import Toaster from "@meforma/vue-toaster";
 /* Theme variables */
 import './theme/variables.css';
 
+
 const app = createApp(App)
   .use(IonicVue)
   .use(router)
   .use(Toaster)
   .use(store);
+
+let configModule: any; 
+let config: any;
+try{
+	configModule = require('./gora_config');
+	config = configModule.config
+}catch(error){
+	console.log("Couldn't find config file, using env variables")
+	config = {
+		apiURL: process.env.FRONTEND_API_URL,
+		apiDomain: process.env.FRONTEND_API_DOMAIN
+	}
+}
 
 axios.defaults.baseURL = config.apiURL
 

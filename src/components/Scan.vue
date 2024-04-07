@@ -65,7 +65,7 @@ ion-page
 import { IonAlert,IonMenu,IonTitle,IonToolbar,IonHeader,IonToast,IonContent,IonButtons,IonButton,IonModal, IonPage, IonList,IonText,IonFab, IonFabButton, IonIcon, IonItem, IonToggle, IonRouterOutlet} from '@ionic/vue';
 import { matrixToValues,teConversion} from '../utils/matrix';
 import { isPlatform } from '@ionic/vue';
-import store,{ ACTIONS_CHIPS, ACTIONS_INVENTORY } from '../store/index';
+import store,{ ACTIONS_CHIPS, ACTIONS_INVENTORY, MUTATIONS_IMPORT_CACHE } from '../store/index';
 import { scanOutline,trash,add, listOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
@@ -207,7 +207,7 @@ export default {
             sucessfullyAdded.push({"quantity": barcode.Quantity, "code": barcode.PartNumber, "manufacturer": barcode.resolved.manufacturer.name});
           })
           store.dispatch(ACTIONS_INVENTORY.add, sucessfullyAdded).then(()=>{
-              this.$toast.show("Succefully Added Inventory");
+              this.$toast.show("Successfully Added Inventory");
             }).catch((error)=>{
                 
             this.$toast.error("Failed:"+error);
@@ -228,7 +228,15 @@ export default {
     
   },
   data() {
-    const alertButtons = [{text: 'Discard',role: 'cancel',handler: () => {this.alertOpen = false;this.isModalOpen = false;this.inv()},},{text: 'Resolve Conflicts',role: 'confirm',handler: () => {this.alertOpen = false;this.isModalOpen = false;this.$router.replace({name:"database", query: { in_codes: this.barcodes_unresolved.map((x)=> x.PartNumber)}})},}];
+    const alertButtons = [{text: 'Discard',role: 'cancel',handler: () => {this.alertOpen = false;this.isModalOpen = false;this.inv()},},{text: 'Resolve Conflicts',role: 'confirm',
+      handler: () => {
+        this.alertOpen = false;
+        this.isModalOpen = false;
+        store.commit(MUTATIONS_IMPORT_CACHE.set, this.barcodes_unresolved);
+        this.$toast.show("Saving Quantities for later resolution.");
+        this.$router.replace({name:"database", query: { in_codes: this.barcodes_unresolved.map((x)=> x.PartNumber)}})
+      },
+    }];
     return {
       alertOpen: false,
       isModalOpen: false,

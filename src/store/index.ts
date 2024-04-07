@@ -21,7 +21,7 @@ export interface State {
   database: GeneralChip[]; 
   manufacturers: Manufacturer[];
   package_types: PackageType[];
-  
+  import_cache_unresolved: Array<any>;
 }
 export interface GeneralChipDetails {
 	display_name: string;
@@ -50,6 +50,12 @@ export interface Manufacturer {
 	financial_hq?: number;
 	parent?: number;
 	website?: string; 
+}
+export const enum MUTATIONS_IMPORT_CACHE{
+	add = 'ADD_UNRESOLVED',
+	set = 'SET_UNRESOLVED',
+	del = 'DEL_UNRESOLVED', 
+	whipe = 'WHIPE_UNRESOLVED'
 }
 //mutations enumeration
 export const enum MUTATIONS_INVENTORY {
@@ -104,8 +110,22 @@ export const enum ACTIONS_MANUFACTURERS {
 export const enum ACTIONS_PACKAGETYPE {
 	fetch = 'FETCH_PACKAGETYPE'
 }
+export const enum ACTIONS_IMPORT_CACHE {
+	post_resolved_inv = 'RESOLVE_UNRESOLVED',
+}
 const mutations: MutationTree<State> = {
-	
+	[MUTATIONS_IMPORT_CACHE.add](state, payload: any) {
+		state.import_cache_unresolved.push(payload);
+	},
+	[MUTATIONS_IMPORT_CACHE.set](state, payload: Array<any>) {
+		state.import_cache_unresolved = [...payload];
+	},
+	[MUTATIONS_IMPORT_CACHE.del](state, payload: number) {
+		state.import_cache_unresolved.splice(payload, 1);
+	},
+	[MUTATIONS_IMPORT_CACHE.whipe](state) {
+		state.import_cache_unresolved = [];
+	},
 	[MUTATIONS_INVENTORY.add](state, payload: BasicSemiCComp) {
 		state.inventory.push(payload);
 	},
@@ -153,7 +173,7 @@ const mutations: MutationTree<State> = {
 	[MUTATIONS_PACKAGETYPE.set](state, payload: PackageType[]) {
 		state.package_types = payload;
 		
-	},
+	}
 
 	
 };
@@ -259,8 +279,39 @@ const actions: ActionTree<State, any> = {
 		}).catch((error) => {
 			return Promise.reject(error);
 		})
-	}
-
+	}, 
+	async [ACTIONS_IMPORT_CACHE.post_resolved_inv]({ commit }, payload) {
+		//first grab the code and manufacturer of the chip
+		const code = payload.code;
+		const manufacturer = payload.manufacturer;
+		//then fetch quantity from unresolved
+		const fetch = this.state.import_cache_unresolved
+		console.log("object array"+JSON.stringify(fetch));
+		const res = fetch.filter((element:any) => element.PartNumber === code)
+		//write json of res[0] to console
+		console.log("Res"+JSON.stringify(res[0]));
+		const quantity = res[0].Quantity;
+		const real_payload = {
+			code: code,
+			manufacturer: manufacturer,
+			quantity: quantity
+		}
+		let success:any ;
+		let _error:any;
+		await this.dispatch(ACTIONS_INVENTORY.add, real_payload).then(() => {
+			commit(MUTATIONS_IMPORT_CACHE.del, payload);
+			success = true;
+		}).catch((error) => {
+			_error = error;
+		})
+		if(success){
+			this.$toast.success('Updated quantities for the item recently resolved'); 
+			return Promise.resolve(code);
+		}
+		if(_error){
+			return Promise.reject(_error);
+		}
+	},
 
 };
 const getters: any = {
@@ -305,6 +356,9 @@ const getters: any = {
 		}else{
 			return state.database
 		}
+	}, 
+	getUnresolvedCache: (state: State) => {
+		return state.import_cache_unresolved;
 	}
 };
 
@@ -320,6 +374,8 @@ const state: State = {
   manufacturers: [
   ], 
   package_types: [
+  ], 
+  import_cache_unresolved: [
   ]
 };
 
