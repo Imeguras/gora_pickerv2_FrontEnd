@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
- import store, { ACTIONS_CHIPS, ACTIONS_MANUFACTURERS, ACTIONS_PACKAGETYPE } from '@/store/index';
+ import store, { ACTIONS_CHIPS, ACTIONS_MANUFACTURERS, ACTIONS_PACKAGETYPE, ACTIONS_IMPORT_CACHE } from '@/store/index';
  import { GeneralChip } from '@/store/index';
 import { 
     IonInput,
@@ -178,10 +178,13 @@ export default {
         description: this.description,
       }; 
       store.dispatch(ACTIONS_CHIPS.add, payload).then(()=>{
-        //todo
-
+        this.$toast.show("Successfully Added Chip");
+        //go to store and find in state the chip that was added
+        store.dispatch(ACTIONS_IMPORT_CACHE.post_resolved_inv, {code: payload.code, manufacturer: payload.manufacturer}).catch((error)=>{
+          this.$toast.error("Failed to add inventory" + error);
+        }); 
       }).catch((error) => {
-        console.log(error);
+        this.$toast.error("Failed to add chip" + error);
       });
     }, 
     async handleFilter(which:string) {
