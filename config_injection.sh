@@ -1,6 +1,6 @@
 #!/bin/bash
 
-_INJECTION_TEXT=$"export const config={ \
+_INJECTION_TEXT="export const config={ \
 	apiURL: '$FRONTEND_API_URL', \
 	apiDomain: '$FRONTEND_API_DOMAIN' \
 }"
