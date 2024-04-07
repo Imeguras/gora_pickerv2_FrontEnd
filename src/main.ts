@@ -24,7 +24,7 @@ import Toaster from "@meforma/vue-toaster";
 
 /* Theme variables */
 import './theme/variables.css';
-import { Env } from 'ionicons/dist/types/stencil-public-runtime';
+
 
 const app = createApp(App)
   .use(IonicVue)
@@ -38,10 +38,10 @@ try{
 	configModule = require('./gora_config');
 	config = configModule.config
 }catch(error){
-	console.log(error);
+	console.log("Couldn't find config file, using env variables")
 	config = {
-		apiURL: Env.FRONTEND_API_URL,
-		apiDomain: Env.FRONTEND_API_DOMAIN
+		apiURL: process.env.FRONTEND_API_URL,
+		apiDomain: process.env.FRONTEND_API_DOMAIN
 	}
 }
 
