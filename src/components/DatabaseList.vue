@@ -23,7 +23,6 @@ ion-page
 </template>
 
 <script lang="ts">
- 
 import { VNetworkGraph } from "v-network-graph"
 //import "v-network-graph/lib/style.css"
 import store, { ACTIONS_CHIPS } from '@/store/index';
@@ -90,13 +89,13 @@ export default {
       
   },
   watch: {
-   
-   getDatabase:{
+    
+  getDatabase:{
     handler(value, oldValue){
       this.database = value;
 		},
     deep: true
-   },
+    },
   
   getGeneralChipDetails:{
     handler(value, oldValue){

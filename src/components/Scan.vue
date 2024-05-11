@@ -11,6 +11,9 @@ ion-page
               ion-toggle(slot="end" aria-labelledby="display_mode_label" v-model="advanced_mode" :enable-on-off-labels="true")
   ion-content#main-content
     .ion-padding
+    ion-content(v-if="!permissable")
+      ion-text(style="font-weight:bold; font-size:1.5em; margin-top:1em; margin-bottom:1em;") Failed to load Camera
+    
     ion-content(v-if="advanced_mode")
       ion-list(v-for="(val, key, index) in barcodes_raw" :key="key")
           ion-item(style="display:flex; flex-direction:column; align-items:center;")
@@ -54,9 +57,10 @@ ion-page
     ion-fab( vertical="bottom" horizontal="start" slot="fixed")
       ion-fab-button( @click="openModal")
         ion-icon(name="add")
-    ion-fab( vertical="bottom" horizontal="center" slot="fixed")
+    ion-fab( vertical="bottom" horizontal="center" slot="fixed" v-if="permissable")
       ion-fab-button(  @click="scanBarcode")
         ion-icon(name="scan-outline")
+    
     ion-fab(vertical="bottom" horizontal="end" slot="fixed")
       ion-fab-button( @click="inv")
         ion-icon(name="list-outline")
@@ -145,8 +149,6 @@ export default {
       
     },
     async scanBarcode() {
-      try{
-        
         //wait for this.permissable to be true with a timeout of 2000ms
         console.log("permissable: "+this.permissable)
         //:if(this.permissable){ //TODO: fix this
@@ -161,12 +163,11 @@ export default {
 
             });
             
-          }));
-        //}
-      }catch(error){
-        this.permissable = false;
-      
-      }
+          }))
+          .catch(() => {
+            this.permissable = false;
+            console.log("permissable: "+this.permissable)
+          }); 
     },
     openModal(){
       this.isModalOpen = true;

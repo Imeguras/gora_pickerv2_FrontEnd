@@ -178,9 +178,10 @@ export default {
         description: this.description,
       }; 
       store.dispatch(ACTIONS_CHIPS.add, payload).then(()=>{
-        this.$toast.show("Successfully Added Chip");
+        this.$toast.show("Successfully Added Chip to database");
         //go to store and find in state the chip that was added
-        store.dispatch(ACTIONS_IMPORT_CACHE.post_resolved_inv, {code: payload.code, manufacturer: payload.manufacturer}).catch((error)=>{
+        store.dispatch(ACTIONS_IMPORT_CACHE.post_resolved_inv, {code: payload.code, manufacturer: payload.manufacturer})
+        .catch((error)=>{
           this.$toast.error("Failed to add inventory" + error);
         }); 
       }).catch((error) => {
