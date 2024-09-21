@@ -187,6 +187,7 @@ export default {
         }).then(()=>{
           this.$emit('Success-Chip', payload.code);
         })
+        
       }).catch((error) => {
         this.$toast.error("Failed to add chip" + error);
       });

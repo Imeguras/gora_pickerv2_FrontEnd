@@ -303,8 +303,8 @@ const actions: ActionTree<State, any> = {
 		}
 		let success:any ;
 		let _error:any;
-		await this.dispatch(ACTIONS_INVENTORY.add, real_payload).then(() => {
-			commit(MUTATIONS_IMPORT_CACHE.del, payload);
+		await this.dispatch(ACTIONS_INVENTORY.add, [real_payload]).then(() => {
+			commit(MUTATIONS_IMPORT_CACHE.del, real_payload);
 			success = true;
 		}).catch((error) => {
 			_error = error;
