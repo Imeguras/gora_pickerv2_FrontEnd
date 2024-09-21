@@ -12,10 +12,11 @@ ion-page
         ion-accordion
           ion-item(slot="header" color="light")
             ion-label {{component}}
-          add-chip(:in_code="component") 
+          add-chip(:in_code="component" @Success-Chip="componentsAdd.splice(componentsAdd.indexOf(component), 1)")
     ion-content
       //ion-backdrop(:visible="!componentsAdd.length")
-      ion-router-outlet 
+      ion-router-outlet
+
 </template>
       
 <script lang="ts">
@@ -40,6 +41,8 @@ import {
 import AddChip from '../components/AddChip.vue';
 import store from '@/store';
 import {isPlatform} from '@ionic/vue';
+
+
 export default {
  
   

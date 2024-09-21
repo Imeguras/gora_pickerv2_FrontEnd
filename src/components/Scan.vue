@@ -11,7 +11,7 @@ ion-page
               ion-toggle(slot="end" aria-labelledby="display_mode_label" v-model="advanced_mode" :enable-on-off-labels="true")
   ion-content#main-content
     .ion-padding
-    ion-content(v-if="!permissable")
+    //ion-content(v-if="!permissable")
       ion-text(style="font-weight:bold; font-size:1.5em; margin-top:1em; margin-bottom:1em;") Failed to load Camera
     
     ion-content(v-if="advanced_mode")
@@ -57,7 +57,8 @@ ion-page
     ion-fab( vertical="bottom" horizontal="start" slot="fixed")
       ion-fab-button( @click="openModal")
         ion-icon(name="add")
-    ion-fab( vertical="bottom" horizontal="center" slot="fixed" v-if="permissable")
+    ion-fab( vertical="bottom" horizontal="center" slot="fixed" ) 
+      //v-if="permissable"
       ion-fab-button(  @click="scanBarcode")
         ion-icon(name="scan-outline")
     
@@ -152,7 +153,8 @@ export default {
         //wait for this.permissable to be true with a timeout of 2000ms
         console.log("permissable: "+this.permissable)
         //:if(this.permissable){ //TODO: fix this
-          BarcodeScanner.scan().then(((result) => {
+          
+          BarcodeScanner.scan(this.ScanOptions).then(((result) => {
             //console.log enumerate objects properties and functions
             
             result.barcodes.forEach(barcode => {
@@ -239,6 +241,14 @@ export default {
       },
     }];
     return {
+      ScanOptions: {
+            "formats": [
+              "DATA_MATRIX"
+            ]
+              
+              
+            
+          },
       alertOpen: false,
       isModalOpen: false,
       advanced_mode: false,

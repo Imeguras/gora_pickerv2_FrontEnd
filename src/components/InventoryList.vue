@@ -11,19 +11,19 @@ ion-page
             ion-toggle(slot="end" aria-labelledby="display_mode_label" v-model="display_mode" :enable-on-off-labels="true")
   ion-content#main-content
     .ion-padding
-    ion-searchbar(animated)
+    ion-searchbar(animated debounce="200" placeholder="Search" v-model="query" @ionChange="filterSearch(query)")
     v-network-graph(graph v-show="display_mode" :nodes="nodes" :edges="edges" :configs="config" :layouts="layouts")
-    ion-list(v-for="item in inventory" :key="item.id")
-      ion-item(style="display:flex; flex-direction:column; align-items:flex-start; space-between:wrap;")
+    ion-list(v-for="item in results" :key="item.id")
+      ion-item(style="display:flex; flex-direction:row; align-items:flex-start; space-between:wrap;")
         ion-img(:src="'manufacturers/' + item.manufacturer.toLowerCase() + '.png'" style="border-radius:50px; width: 64px; background-color: grey; margin-right:1em;")
         ion-text {{ item.code }}
-        ion-text {{ item.quantity }}
+        ion-text.quantity {{ 'x'+item.quantity }}
     ion-fab( vertical="bottom" horizontal="end" slot="fixed")
       ion-fab-button( @click="scan")
         ion-icon(name="scan-outline")
     ion-fab( vertical="bottom" horizontal="start" slot="fixed")
       ion-fab-button( @click="this.$router.replace({path:'/database/list'})")
-        ion-icon(name="trash")
+        ion-icon(name="library-outline")
 
 </template>
 
@@ -54,11 +54,11 @@ import {
     IonImg,
     IonRouterOutlet} from '@ionic/vue';
 import { mapGetters } from 'vuex';
-import { scanOutline,trash,add, listOutline } from 'ionicons/icons';
+import { scanOutline,libraryOutline,add, listOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 addIcons({
   "scan-outline": scanOutline,
-  "trash": trash,
+  "library-outline": libraryOutline,
   "add": add,
   "list-outline": listOutline
 });
@@ -92,14 +92,14 @@ export default {
 
   },
   watch: {
-   
-   getInventory:{
-    handler(value, oldValue){
-      this.inventory = value;
-		},
-    deep: true
     
-   },
+    getInventory:{
+      handler(value, oldValue){
+        this.inventory = value;
+      },
+      deep: true
+    
+    },
   
     getGeneralChipDetails:{
       handler(value, oldValue){
@@ -135,7 +135,27 @@ export default {
     
     scan(){
       this.$router.replace({path:'/inventory/scan'});
-     
+      
+    }, 
+    filterSearch(_query: string) {
+      if(_query === ""){
+        console.log(this.inventory);
+        if(this.resultsTagged.length <=0){
+          this.results = this.resultsTagged;
+
+        }else{
+          this.results = this.inventory;
+        }
+        
+
+      }
+      if (this.resultsTagged.length <=0){
+
+        this.results = this.inventory.filter((d: any) => d.code.toLocaleLowerCase().indexOf(_query) > -1);
+
+      }else{
+        this.results = this.resultsTagged.filter((d: any) => d.code.toLocaleLowerCase().indexOf(_query) > -1);
+      }
     }
   },
   data(){
@@ -143,13 +163,16 @@ export default {
   
     return{
       display_mode: true,
-      inventory: null,
+      query: "",
+      inventory: [],
+      resultsTagged: [],
+      results: [],
+
       nodes:{
         database: { name: "Database Origin" }
         
       },
       edges:{
-     
       },
       layouts:{
 
@@ -275,7 +298,10 @@ export default {
   },
   mounted() {
     if(this.getInventory.length === 0){
-      store.dispatch(ACTIONS_INVENTORY.fetch, null).catch((error) => {
+      store.dispatch(ACTIONS_INVENTORY.fetch, null).then(() => {
+        this.filterSearch(this.query)
+      }).catch((error) => {
+        this.filterSearch("")
         this.$toast.error("Failed to fetch inventory")
       });
     }
@@ -290,6 +316,12 @@ export default {
 
 </script>
 <style scoped>
+.quantity{
+  font-size: 20px;
+  font-style: italic;
+
+  
+}
 .ion-padding{
   margin-top: 2em;
 }
@@ -307,7 +339,7 @@ export default {
   width: 800px;
   height: 600px;
   border: 1px solid #000;
- 
+    
 }
 </style>
 

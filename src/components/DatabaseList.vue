@@ -16,10 +16,13 @@ ion-page
       ion-item(style="display:flex; flex-direction:column; align-items:flex-start; space-between:wrap;")
         //ion-img(:src="'manufacturers/' + item.manufacturer.toLowerCase() + '.png'" style="border-radius:50px; width: 64px; background-color: grey; margin-right:1em;")
         ion-text {{ item.code }}
-        //ion-text {{ item.manufacturer }}
+        ion-text {{ item.manufacturer }}
         //ion-text {{ item.family }}
         //ion-text {{ item.packageType }}
         //ion-text {{ item.description }}
+    ion-fab( vertical="bottom" horizontal="start" slot="fixed")
+      ion-fab-button( @click="this.$router.replace({path:'/inventory/list'})")
+        ion-icon(name="server-outline")
 </template>
 
 <script lang="ts">
@@ -46,7 +49,11 @@ import {
     IonImg,
     IonRouterOutlet} from '@ionic/vue';
 import { mapGetters } from 'vuex';
-
+import { serverOutline } from 'ionicons/icons';
+import { addIcons } from 'ionicons';
+addIcons({
+  "server-outline": serverOutline,
+});
 export default {
   name: 'DatabaseList',
   components: {
@@ -71,9 +78,6 @@ export default {
       
       
 
-  },
-  emits: {
-    'click:chip': null
   },
   computed:{
       ...mapGetters(['getGeneralChipDetails', 'getDatabase'])

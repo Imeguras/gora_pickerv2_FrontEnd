@@ -39,8 +39,9 @@
 			if(field.match(/^Q.+/)){
 				teObject["Quantity"] = parseInt(field.replace(/^Q/, ''))
 			}
-			if(field.match(/^[0-9]?P.+/)){
-				teObject["PartNumber"] = field.replace(/^[0-9]?P/, '') 
+			if(field.match(/^[0-9]?P.+/) ){
+				teObject["PartNumber"] = field.replace(/^[0-9]?P/, '')
+				
 			}
 		}); 
 		return teObject

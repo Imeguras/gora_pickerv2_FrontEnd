@@ -1,4 +1,5 @@
 <template lang="pug">
+//TODO rename this component it should be something describes "the component that sits above a list"
 .ion-padding( slot="content")
   ion-input(v-model="code" label="code" label-placement="floating" required="true")
   ion-searchbar(animated placeholder="manufacturer" v-model="selected_manufacturer" :floating="true" :debounce="250" @ionInput="handleFilter('manufacturer'); sel_man = false")
@@ -183,10 +184,13 @@ export default {
         store.dispatch(ACTIONS_IMPORT_CACHE.post_resolved_inv, {code: payload.code, manufacturer: payload.manufacturer})
         .catch((error)=>{
           this.$toast.error("Failed to add inventory" + error);
-        }); 
+        }).then(()=>{
+          this.$emit('Success-Chip', payload.code);
+        })
       }).catch((error) => {
         this.$toast.error("Failed to add chip" + error);
       });
+      
     }, 
     async handleFilter(which:string) {
       switch(which){

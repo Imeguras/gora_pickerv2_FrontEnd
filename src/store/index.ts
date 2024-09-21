@@ -129,6 +129,11 @@ const mutations: MutationTree<State> = {
 	[MUTATIONS_INVENTORY.add](state, payload: BasicSemiCComp) {
 		state.inventory.push(payload);
 	},
+	[MUTATIONS_INVENTORY.set](state, payload: BasicSemiCComp[]  ){
+		state.inventory = payload;
+		console.log(state.inventory);
+	},
+
 
 	[MUTATIONS_INVENTORY.del](state, payload: number) {
 		state.inventory.splice(payload, 1);
