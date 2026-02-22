@@ -1,7 +1,7 @@
-<template>
-  <ion-page>
-    <ion-router-outlet/>
-  </ion-page>
+<template lang="pug">
+  ion-page
+    ion-router-outlet
+  
 </template>
 
 <script setup lang="ts">

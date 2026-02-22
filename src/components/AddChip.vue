@@ -2,11 +2,11 @@
 //TODO rename this component it should be something describes "the component that sits above a list"
 .ion-padding( slot="content")
   ion-input(v-model="code" label="code" label-placement="floating" required="true")
-  ion-searchbar(animated placeholder="manufacturer" v-model="selected_manufacturer" :floating="true" :debounce="250" @ionInput="handleFilter('manufacturer'); sel_man = false")
+  ion-searchbar(animated debounce="100" placeholder="manufacturer" v-model="selected_manufacturer" :floating="true" :debounce="250" @ionInput="handleFilter('manufacturer'); sel_man = false")
   ion-list(v-if="sel_man===false && selected_manufacturer != ''  " style="height: 200px; overflow: auto;")
     ion-item(v-for="manufacturer in manufacturers" :key="manufacturer" @click="selected_manufacturer = manufacturer.name; sel_man = true")
       ion-label {{manufacturer.name}}
-  ion-searchbar(animated placeholder="packagetype" v-model="selected_packagetype" :floating="true" :debounce="250" @ionInput="handleFilter('packagetype'); sel_packagetype = false")
+  ion-searchbar(animated debounce="100" placeholder="packagetype" v-model="selected_packagetype" :floating="true" :debounce="250" @ionInput="handleFilter('packagetype'); sel_packagetype = false")
   ion-list(v-if="sel_packagetype===false && selected_packagetype != ''  " style="height: 200px; overflow: auto;")
     ion-item(v-for="pack in packagetype" :key="pack.name" @click="selected_packagetype = pack.name; sel_packagetype = true")
       ion-label {{pack.name}}
@@ -15,7 +15,7 @@
       ion-item(slot="header" color="light")
         ion-label Other Fields(Recommended)
       .ion-padding( slot="content")
-        ion-searchbar(animated placeholder="family" v-model="selected_family" :floating="true" :debounce="250" @ionInput="handleFilter('family')")
+        ion-searchbar(animated debounce="100" placeholder="family" v-model="selected_family" :floating="true" :debounce="250" @ionInput="handleFilter('family')")
         ion-list(v-if="sel_family===false && selected_family != ''  " style="height: 200px; overflow: auto;")
           ion-item(v-for="family in familys" :key="family" @click="selected_family = family.name; sel_family = true")
             ion-label {{family.name}}

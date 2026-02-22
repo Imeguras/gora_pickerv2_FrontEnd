@@ -3,12 +3,12 @@ ion-page
   ion-header(:translucent="true")
     ion-toolbar#toolbar_inventory
       ion-menu-button(:slot="slot_side" auto-hide="false")
-      ion-title#title_inventory GoraPicker{{capitalizeFirstLetter(componentInRouter)}}
+      ion-title#title_inventory(@ionChange="jumpChange(search)") GoraPicker{{capitalizeFirstLetter(componentInRouter)}}
   .ion-padding
   ion-content
     ion-content(v-if="componentsAdd.length")
       ion-text(style="font-weight:bold; font-size:1.5em; margin-top:1em; margin-bottom:1em;") Add Chips
-      ion-accordion-group(v-for="component in componentsAdd" :key="component")
+      ion-accordion-group(v-for="component in results" :key="component")
         ion-accordion
           ion-item(slot="header" color="light")
             ion-label {{component}}
@@ -76,11 +76,15 @@ export default {
   },
   data() {
     const componentsAdd: Array<string> = [];
+    const results: Array<string> = [];
+    const resultsTagged: Array<string> = [];
     return {
       slot_side: "start",
       componentsAdd,
+      resultsTagged,
+      results,
       componentInRouter: this.$route.path
-    }
+    } 
   },
   mounted() {
     if (isPlatform('desktop')) {
@@ -103,6 +107,29 @@ export default {
         //join the array back into a string
         return words.join('/');
 
+      },
+      jumpChange(search: string) {
+        this.$router.push({path: search});
+      },
+      filterSearch(_query: string) {
+        if(_query === ""){
+          console.log(this.componentsAdd);
+          if(this.resultsTagged.length <=0){
+            this.results = this.resultsTagged;
+
+          }else{
+            this.results = this.componentsAdd;
+          }
+          
+
+        }
+        if (this.resultsTagged.length <=0){
+
+          this.results = this.componentsAdd.filter((d: any) => d.code.toLocaleLowerCase().indexOf(_query.toLocaleLowerCase()) > -1);
+
+        }else{
+          this.results = this.resultsTagged.filter((d: any) => d.code.toLocaleLowerCase().indexOf(_query.toLocaleLowerCase()) > -1);
+        }
       }
   },  
     

@@ -181,7 +181,7 @@ export default {
         //check if barcode exists in database
         //if not, add to unresolved
         //if so, add to resolved
-        const PartNumber = barcode.PartNumber;
+        const PartNumber = "barcode".PartNumber;
         store.dispatch(ACTIONS_CHIPS.get, PartNumber).then((result)=>{
           barcode.resolved= result; 
           console.log("resolved: "+barcode.resolved.code);

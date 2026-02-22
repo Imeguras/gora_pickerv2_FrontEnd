@@ -11,7 +11,7 @@ ion-page
             ion-toggle(slot="end" aria-labelledby="display_mode_label" v-model="display_mode" :enable-on-off-labels="true")
   ion-content#main-content
     .ion-padding
-    ion-searchbar(animated debounce="200" placeholder="Search" v-model="query" @ionChange="filterSearch(query)")
+    ion-searchbar(animated debounce="100" placeholder="Search" v-model="query" @ionInput="filterSearch(query)")
     v-network-graph(graph v-show="display_mode" :nodes="nodes" :edges="edges" :configs="config" :layouts="layouts")
     ion-list(v-for="item in results" :key="item.id")
       ion-item(style="display:flex; flex-direction:row; align-items:flex-start; space-between:wrap;")
@@ -28,7 +28,6 @@ ion-page
 </template>
 
 <script lang="ts">
- 
 import { VNetworkGraph } from "v-network-graph"
 //import "v-network-graph/lib/style.css"
 import store, { ACTIONS_INVENTORY } from '@/store/index';
@@ -100,7 +99,6 @@ export default {
       deep: true
     
     },
-  
     getGeneralChipDetails:{
       handler(value, oldValue){
         const database = this.nodes.database
@@ -112,6 +110,7 @@ export default {
         this.layouts = {
           database: {x: 0, y: 0}
         }
+        
         //foreach value
         const size_value = Object.keys(value).length
         for (const [key, val] of Object.entries(value)) {
@@ -124,7 +123,10 @@ export default {
           const coordsX = 100 * Math.cos(theta);
           const coordsY = 100 * Math.sin(theta);
           this.layouts[val] = {x: coordsX, y: coordsY}
+          //foreach value load its entries
+          
         }
+        
       },
       deep: true
       
@@ -137,6 +139,7 @@ export default {
       this.$router.replace({path:'/inventory/scan'});
       
     }, 
+    //TODO: used more than once change this
     filterSearch(_query: string) {
       if(_query === ""){
         console.log(this.inventory);
@@ -151,10 +154,10 @@ export default {
       }
       if (this.resultsTagged.length <=0){
 
-        this.results = this.inventory.filter((d: any) => d.code.toLocaleLowerCase().indexOf(_query) > -1);
+        this.results = this.inventory.filter((d: any) => d.code.toLocaleLowerCase().indexOf(_query.toLocaleLowerCase()) > -1);
 
       }else{
-        this.results = this.resultsTagged.filter((d: any) => d.code.toLocaleLowerCase().indexOf(_query) > -1);
+        this.results = this.resultsTagged.filter((d: any) => d.code.toLocaleLowerCase().indexOf(_query.toLocaleLowerCase()) > -1);
       }
     }
   },
@@ -312,6 +315,8 @@ export default {
     }
     
   },
+  
+
 }
 
 </script>

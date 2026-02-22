@@ -10,7 +10,7 @@ ion-page
             ion-text#display_mode_label  Display Cascading Nodes Mode
             ion-toggle(slot="end" aria-labelledby="display_mode_label" v-model="display_mode" :enable-on-off-labels="true")
   ion-content#main-content
-    ion-searchbar(animated)
+    ion-searchbar(animated debounce="100" @ionInput="filterSearch(query)")
     v-network-graph(graph v-show="display_mode" :nodes="nodes" :edges="edges" :configs="config" :layouts="layouts")
     ion-list(v-for="item in database" :key="item.id")
       ion-item(style="display:flex; flex-direction:column; align-items:flex-start; space-between:wrap;")
